@@ -1,0 +1,26 @@
+dist: xenial
+os: linux
+language: php
+
+php:
+  - 7.2
+  - 7.3
+  - 7.4
+
+env:
+  jobs:
+    - COMPOSER_FLAGS="--prefer-lowest"
+    - COMPOSER_FLAGS=""
+
+before_install:
+  - COMPOSER_MEMORY_LIMIT=-1 travis_retry composer self-update
+
+install:
+  - COMPOSER_MEMORY_LIMIT=-1 travis_retry composer update --prefer-source $COMPOSER_FLAGS
+
+script:
+  - phpunit
+
+branches:
+  only:
+    - master
