@@ -6,6 +6,7 @@ use ClaudioDekker\Inertia\Tests\TestCase;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Collection;
 use Inertia\Inertia;
 use PHPUnit\Framework\AssertionFailedError;
 
@@ -310,7 +311,7 @@ class AssertionsTest extends TestCase
     {
         Model::unguard();
         $user = User::make(['name' => 'Example']);
-        $resource = JsonResource::collection([$user, $user]);
+        $resource = JsonResource::collection(new Collection([$user, $user]));
 
         $response = $this->makeMockResponse(
             Inertia::render('test-component', [
