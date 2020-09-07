@@ -89,4 +89,13 @@ class Assertions
             return $this;
         };
     }
+    
+    public function dumpInertiaProps()
+    {
+        return function ($key = null) {
+            dump(Arr::get($this->inertiaProps(), $key));
+
+            return $this;
+        };
+    }
 }
