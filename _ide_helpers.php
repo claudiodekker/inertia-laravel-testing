@@ -13,7 +13,7 @@ namespace Illuminate\Testing {
      * @method self assertInertiaHas($key, $value = null)
      * @method self assertInertiaHasAll(array $bindings)
      * @method self assertInertiaMissing($key)
-     * @method self dumpInertiaProps($key)
+     * @method self dumpInertiaProps($key = null)
      * @method array inertiaProps()
      */
     class TestResponse
@@ -31,7 +31,7 @@ namespace Illuminate\Foundation\Testing {
      * @method self assertInertiaHas($key, $value = null)
      * @method self assertInertiaHasAll(array $bindings)
      * @method self assertInertiaMissing($key)
-     * @method self dumpInertiaProps($key)
+     * @method self dumpInertiaProps($key = null)
      * @method array inertiaProps()
      */
     class TestResponse
