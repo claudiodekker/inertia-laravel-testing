@@ -475,6 +475,58 @@ class AssertionsTest extends TestCase
         $response->assertInertiaMissing('baz.nested');
     }
 
+    public function test_it_can_retrieve_a_single_prop()
+    {
+        $response = $this->makeMockResponse(
+            Inertia::render('test-component', [
+                'foo' => [
+                    'nested' => ['bar', 'baz'],
+                ],
+            ])
+        );
+
+        $this->assertCount(1, $response->inertiaProps('foo'));
+    }
+
+    public function test_it_does_not_have_a_single_prop()
+    {
+        $response = $this->makeMockResponse(
+            Inertia::render('test-component', [
+                'foo' => [
+                    'nested' => ['bar', 'baz'],
+                ],
+            ])
+        );
+
+        $this->assertNull($response->inertiaProps('baz'));
+    }
+
+    public function test_it_can_retrieve_a_single_nested_prop()
+    {
+        $response = $this->makeMockResponse(
+            Inertia::render('test-component', [
+                'foo' => [
+                    'nested' => ['bar', 'baz'],
+                ],
+            ])
+        );
+
+        $this->assertCount(2, $response->inertiaProps('foo.nested'));
+    }
+
+    public function test_it_does_not_have_a_single_nested_prop()
+    {
+        $response = $this->makeMockResponse(
+            Inertia::render('test-component', [
+                'foo' => [
+                    'nested' => ['bar', 'baz'],
+                ],
+            ])
+        );
+
+        $this->assertNull($response->inertiaProps('foo.bar'));
+    }
+
     private function makeMockResponse($view)
     {
         app('router')->get('/', function () use ($view) {
