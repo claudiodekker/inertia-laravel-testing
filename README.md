@@ -38,9 +38,12 @@ $response->assertInertia('example', [
 ]);
 ```
 
-Return all the available Inertia props for the page
+Return all available Inertia props for the page, or only retrieve a specific one
 ``` php
-$response->inertiaProps(); 
+$response->inertiaProps();
+
+// Retrieve a specific (nested) prop. Returns `null` if the prop doesn't exist.
+$response->inertiaProps('nested.prop'); 
 ```
 
 Assert whether the Inertia-rendered view has a specific property set
