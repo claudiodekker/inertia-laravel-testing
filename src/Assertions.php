@@ -32,15 +32,6 @@ class Assertions
         };
     }
 
-    public function inertiaProps()
-    {
-        return function () {
-            $this->assertInertia();
-
-            return $this->viewData('page')['props'];
-        };
-    }
-
     public function assertInertiaHas()
     {
         return function ($key, $value = null) {
@@ -51,13 +42,13 @@ class Assertions
             if (is_null($value)) {
                 PHPUnit::assertTrue(Arr::has($this->inertiaProps(), $key));
             } elseif ($value instanceof Closure) {
-                PHPUnit::assertTrue($value(Arr::get($this->inertiaProps(), $key)));
+                PHPUnit::assertTrue($value($this->inertiaProps($key)));
             } elseif ($value instanceof Arrayable) {
-                PHPUnit::assertEquals($value->toArray(), Arr::get($this->inertiaProps(), $key));
+                PHPUnit::assertEquals($value->toArray(), $this->inertiaProps($key));
             } elseif ($value instanceof Responsable) {
-                PHPUnit::assertEquals($value->toResponse($this)->getData(), Arr::get($this->inertiaProps(), $key));
+                PHPUnit::assertEquals($value->toResponse($this)->getData(), $this->inertiaProps($key));
             } else {
-                PHPUnit::assertEquals($value, Arr::get($this->inertiaProps(), $key));
+                PHPUnit::assertEquals($value, $this->inertiaProps($key));
             }
 
             return $this;
@@ -87,6 +78,19 @@ class Assertions
             PHPUnit::assertFalse(Arr::has($this->inertiaProps(), $key));
 
             return $this;
+        };
+    }
+
+    public function inertiaProps()
+    {
+        return function ($key = null) {
+            $this->assertInertia();
+
+            if (is_null($key)) {
+                return $this->viewData('page')['props'];
+            }
+
+            return Arr::get($this->viewData('page')['props'], $key);
         };
     }
 }
