@@ -13,7 +13,7 @@
 You can install the package via composer:
 
 ```bash
-composer require claudiodekker/inertia-laravel-testing
+composer require --dev claudiodekker/inertia-laravel-testing
 ```
 
 ## Usage
