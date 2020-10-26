@@ -16,6 +16,27 @@ You can install the package via composer:
 composer require --dev claudiodekker/inertia-laravel-testing
 ```
 
+### Orchestral Testbench
+In case you are using `orchestra/testbench` loading the `InertiaTestingServiceProvider` is required in your `TestCase`.
+
+```php
+<?php
+
+
+class TestCase extends Orchestra\Testbench\TestCase
+{
+    protected function getPackageProviders($app)
+    {
+        return [
+                  // Add your custom service providers
+                  // .... 
+                  // Inertia testing provider
+                  'ClaudioDekker\Inertia\InertiaTestingServiceProvider'
+                ];
+    }
+}
+```
+
 ## Usage
 
 To test, simply chain any of the following methods onto your `TestResponse` responses.
