@@ -3,7 +3,7 @@
 > **NOTE**: This package WILL be deprecated once ANY official testing helpers become available in [inertiajs/inertia-laravel](https://github.com/inertiajs/inertia-laravel). The package WILL stay available for install, but WILL NOT receive any further (security) updates from that point forward.
 
 [![Latest Version](https://img.shields.io/github/release/claudiodekker/inertia-laravel-testing.svg?style=flat-square)](https://github.com/claudiodekker/inertia-laravel-testing/releases)
-[![Build Status](https://img.shields.io/travis/claudiodekker/inertia-laravel-testing/master.svg?style=flat-square)](https://travis-ci.org/claudiodekker/inertia-laravel-testing)
+[![Build Status](https://img.shields.io/github/workflow/status/claudiodekker/inertia-laravel-testing/tests.svg?style=flat-square)](https://github.com/claudiodekker/inertia-laravel-testing/actions?query=workflow%3Atests+branch%3Amaster)
 [![Quality Score](https://img.shields.io/scrutinizer/g/claudiodekker/inertia-laravel-testing.svg?style=flat-square)](https://scrutinizer-ci.com/g/claudiodekker/inertia-laravel-testing)
 [![StyleCI](https://styleci.io/repos/292526547/shield)](https://styleci.io/repos/292526547)
 [![Total Downloads](https://img.shields.io/packagist/dt/claudiodekker/inertia-laravel-testing.svg?style=flat-square)](https://packagist.org/packages/claudiodekker/inertia-laravel-testing)
