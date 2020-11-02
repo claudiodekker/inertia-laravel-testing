@@ -1,12 +1,24 @@
+![inertiajs/inertia-laravel Testing Helpers](https://banners.beyondco.de/Inertia%20Laravel%20Testing%20Helpers.png?theme=light&packageName=--dev+claudiodekker%2Finertia-laravel-testing&pattern=circuitBoard&style=style_1&description=Assertions+to+help+ensure+that+an+InertiaJS-compatible+response+is+sent&md=1&fontSize=100px&images=check-circle)
+
+<p align="center">
+  <a href="https://github.com/claudiodekker/inertia-laravel-testing/releases">
+    <img src="https://img.shields.io/github/release/claudiodekker/inertia-laravel-testing.svg?style=flat-square" alt="Latest Version">
+  </a>
+  <a href="https://github.com/claudiodekker/inertia-laravel-testing/actions?query=workflow%3Atests+branch%3Amaster">
+    <img src="https://img.shields.io/github/workflow/status/claudiodekker/inertia-laravel-testing/tests/master.svg?style=flat-square" alt="Build Status">
+  </a>
+  <a href="https://scrutinizer-ci.com/g/claudiodekker/inertia-laravel-testing">
+    <img src="https://img.shields.io/scrutinizer/g/claudiodekker/inertia-laravel-testing.svg?style=flat-square" alt="Quality Score">
+  </a>
+  <a href="https://styleci.io/repos/292526547"><img src="https://styleci.io/repos/292526547/shield" alt="StyleCI"></a>
+  <a href="https://packagist.org/packages/claudiodekker/inertia-laravel-testing">
+    <img src="https://img.shields.io/packagist/dt/claudiodekker/inertia-laravel-testing.svg?style=flat-square" alt="Total Downloads">
+  </a>
+</p>
+
 # [inertiajs/inertia-laravel](https://github.com/inertiajs/inertia-laravel) Testing Helpers
 
 > **NOTE**: This package WILL be deprecated once ANY official testing helpers become available in [inertiajs/inertia-laravel](https://github.com/inertiajs/inertia-laravel). The package WILL stay available for install, but WILL NOT receive any further (security) updates from that point forward.
-
-[![Latest Version](https://img.shields.io/github/release/claudiodekker/inertia-laravel-testing.svg?style=flat-square)](https://github.com/claudiodekker/inertia-laravel-testing/releases)
-[![Build Status](https://img.shields.io/github/workflow/status/claudiodekker/inertia-laravel-testing/tests/master.svg?style=flat-square)](https://github.com/claudiodekker/inertia-laravel-testing/actions?query=workflow%3Atests+branch%3Amaster)
-[![Quality Score](https://img.shields.io/scrutinizer/g/claudiodekker/inertia-laravel-testing.svg?style=flat-square)](https://scrutinizer-ci.com/g/claudiodekker/inertia-laravel-testing)
-[![StyleCI](https://styleci.io/repos/292526547/shield)](https://styleci.io/repos/292526547)
-[![Total Downloads](https://img.shields.io/packagist/dt/claudiodekker/inertia-laravel-testing.svg?style=flat-square)](https://packagist.org/packages/claudiodekker/inertia-laravel-testing)
 
 ## Installation
 
