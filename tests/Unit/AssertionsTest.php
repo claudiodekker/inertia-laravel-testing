@@ -527,6 +527,72 @@ class AssertionsTest extends TestCase
         $this->assertNull($response->inertiaProps('foo.bar'));
     }
 
+    public function test_the_inertia_page_is_matching_count()
+    {
+        $response = $this->makeMockResponse(
+            Inertia::render('test-component', [
+                'foo' => 'bar',
+                'baz' => [
+                    'nested' => 'value',
+                    'other' => 'value',
+                ],
+            ])
+        );
+
+        $response->assertInertiaCount('baz', 2);
+    }
+
+    public function test_the_inertia_page_with_nested_key_is_matching_count()
+    {
+        $response = $this->makeMockResponse(
+            Inertia::render('test-component', [
+                'foo' => 'bar',
+                'baz' => [
+                    'nested' => [
+                        'flim' => 'value',
+                        'flam' => 'value',
+                    ],
+                ],
+            ])
+        );
+
+        $response->assertInertiaCount('baz.nested', 2);
+    }
+
+    public function test_the_inertia_page_is_not_matching_count()
+    {
+        $response = $this->makeMockResponse(
+            Inertia::render('test-component', [
+                'foo' => 'bar',
+                'baz' => [
+                    'nested' => 'value',
+                    'other' => 'value',
+                ],
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+
+        $response->assertInertiaCount('baz', 3);
+    }
+
+    public function test_the_inertia_page_fails_count_on_missing_prop()
+    {
+        $response = $this->makeMockResponse(
+            Inertia::render('test-component', [
+                'foo' => 'bar',
+                'baz' => [
+                    'nested' => 'value',
+                    'other' => 'value',
+                ],
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+
+        $response->assertInertiaCount('invalid', 2);
+    }
+
     private function makeMockResponse($view)
     {
         app('router')->get('/', function () use ($view) {

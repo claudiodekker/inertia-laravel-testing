@@ -81,6 +81,17 @@ class Assertions
         };
     }
 
+    public function assertInertiaCount()
+    {
+        return function ($key, $count) {
+            $this->assertInertia();
+
+            PHPUnit::assertCount($count, Arr::get($this->inertiaProps(), $key, []));
+
+            return $this;
+        };
+    }
+
     public function inertiaProps()
     {
         return function ($key = null) {
