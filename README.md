@@ -105,13 +105,22 @@ $response->assertInertiaHasAll([
 ]);
 ```
 
-Finally, you can assert that a property was not set:
+You can also assert that a property was not set:
 ```php
 $response->assertInertiaMissing('key');
 
 // or, for deeply nested values
 $response->assertInertiaMissing('deeply.nested.key');
 ```
+
+Assert whether a specific property has the correct count of records
+```php
+$response->assertCount('key', $count);
+
+// or, for deeply nested values
+$response->assertCount('deeply.nested.key', $count);
+```
+
 
 ## Testing
 
