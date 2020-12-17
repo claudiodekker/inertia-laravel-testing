@@ -115,10 +115,10 @@ $response->assertInertiaMissing('deeply.nested.key');
 
 Assert whether a specific property has the correct count of records
 ```php
-$response->assertCount('key', $count);
+$response->assertInertiaCount('key', $count);
 
 // or, for deeply nested values
-$response->assertCount('deeply.nested.key', $count);
+$response->assertInertiaCount('deeply.nested.key', $count);
 ```
 
 
