@@ -59,10 +59,10 @@ class AssertionsTest extends TestCase
         config(['inertia-laravel-testing.page.paths' => [realpath(__DIR__ . '/..')]]);
 
         $response = $this->makeMockResponse(
-            Inertia::render('Fixtures/ExamplePage')
+            Inertia::render('fixtures/ExamplePage')
         );
 
-        $response->assertInertia('Fixtures/ExamplePage');
+        $response->assertInertia('fixtures/ExamplePage');
     }
 
     public function test_the_inertia_component_does_not_match()
