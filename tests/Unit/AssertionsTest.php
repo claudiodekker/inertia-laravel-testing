@@ -2,6 +2,7 @@
 
 namespace ClaudioDekker\Inertia\Tests\Unit;
 
+use ClaudioDekker\Inertia\InertiaTesting;
 use ClaudioDekker\Inertia\Tests\TestCase;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
@@ -33,11 +34,35 @@ class AssertionsTest extends TestCase
 
     public function test_the_inertia_component_matches()
     {
+        InertiaTesting::disablePageExistenceCheck();
         $response = $this->makeMockResponse(
             Inertia::render('test-component')
         );
 
         $response->assertInertia('test-component');
+        InertiaTesting::enablePageExistenceCheck();
+    }
+
+    public function test_the_inertia_component_does_not_exist_on_the_filesystem()
+    {
+        $this->expectException(AssertionFailedError::class);
+
+        $response = $this->makeMockResponse(
+            Inertia::render('test-component')
+        );
+
+        $response->assertInertia('test-component');
+    }
+
+    public function test_the_inertia_component_exists_on_the_filesystem()
+    {
+        config(['inertia-laravel-testing.page.paths' => [realpath(__DIR__ . '/..')]]);
+
+        $response = $this->makeMockResponse(
+            Inertia::render('Fixtures/ExamplePage')
+        );
+
+        $response->assertInertia('Fixtures/ExamplePage');
     }
 
     public function test_the_inertia_component_does_not_match()
@@ -53,6 +78,7 @@ class AssertionsTest extends TestCase
 
     public function test_the_inertia_component_and_props_match()
     {
+        InertiaTesting::disablePageExistenceCheck();
         $response = $this->makeMockResponse(
             Inertia::render('test-component', $props = [
                 'foo' => 'bar',
@@ -60,6 +86,7 @@ class AssertionsTest extends TestCase
         );
 
         $response->assertInertia('test-component', $props);
+        InertiaTesting::enablePageExistenceCheck();
     }
 
     public function test_the_inertia_component_and_props_do_not_match()

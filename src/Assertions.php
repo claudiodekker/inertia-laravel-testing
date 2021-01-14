@@ -7,23 +7,36 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Support\Arr;
 use PHPUnit\Framework\Assert as PHPUnit;
+use InvalidArgumentException;
 
 class Assertions
 {
+    public const MESSAGE_NOT_A_VALID_INERTIA_RESPONSE = 'Not a valid Inertia response.';
+    public const MESSAGE_UNEXPECTED_INERTIA_COMPONENT = 'Unexpected Inertia page component.';
+    public const MESSAGE_INERTIA_COMPONENT_NOT_FOUND = 'Inertia page component [%s] does not exist.';
+
     public function assertInertia()
     {
         return function ($component = null, $props = []) {
             $this->assertViewHas('page');
 
             tap($this->viewData('page'), function ($view) {
-                PHPUnit::assertArrayHasKey('component', $view);
-                PHPUnit::assertArrayHasKey('props', $view);
-                PHPUnit::assertArrayHasKey('url', $view);
-                PHPUnit::assertArrayHasKey('version', $view);
+                PHPUnit::assertArrayHasKey('component', $view, Assertions::MESSAGE_NOT_A_VALID_INERTIA_RESPONSE);
+                PHPUnit::assertArrayHasKey('props', $view, Assertions::MESSAGE_NOT_A_VALID_INERTIA_RESPONSE);
+                PHPUnit::assertArrayHasKey('url', $view, Assertions::MESSAGE_NOT_A_VALID_INERTIA_RESPONSE);
+                PHPUnit::assertArrayHasKey('version', $view, Assertions::MESSAGE_NOT_A_VALID_INERTIA_RESPONSE);
             });
 
             if (! is_null($component)) {
-                PHPUnit::assertEquals($component, $this->viewData('page')['component']);
+                if (InertiaTesting::shouldCheckForPageExistence()) {
+                    try {
+                        app('inertia-laravel-testing.view.finder')->find($component);
+                    } catch (InvalidArgumentException $exception) {
+                        PHPUnit::fail(sprintf(Assertions::MESSAGE_INERTIA_COMPONENT_NOT_FOUND, $component));
+                    }
+                }
+
+                PHPUnit::assertEquals($component, $this->viewData('page')['component'], Assertions::MESSAGE_UNEXPECTED_INERTIA_COMPONENT);
             }
 
             $this->assertInertiaHasAll($props);
