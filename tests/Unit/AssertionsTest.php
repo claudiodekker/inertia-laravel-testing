@@ -56,7 +56,7 @@ class AssertionsTest extends TestCase
 
     public function test_the_inertia_component_exists_on_the_filesystem()
     {
-        config(['inertia-laravel-testing.page.paths' => [realpath(__DIR__ . '/..')]]);
+        config(['inertia-laravel-testing.page.paths' => [realpath(__DIR__.'/..')]]);
 
         $response = $this->makeMockResponse(
             Inertia::render('fixtures/ExamplePage')

@@ -6,8 +6,8 @@ use Closure;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Support\Arr;
-use PHPUnit\Framework\Assert as PHPUnit;
 use InvalidArgumentException;
+use PHPUnit\Framework\Assert as PHPUnit;
 
 class Assertions
 {
