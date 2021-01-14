@@ -34,13 +34,13 @@ class AssertionsTest extends TestCase
 
     public function test_the_inertia_component_matches()
     {
-        InertiaTesting::disablePageExistenceCheck();
-        $response = $this->makeMockResponse(
-            Inertia::render('test-component')
-        );
+        InertiaTesting::withoutPageExistenceCheck(function () {
+            $response = $this->makeMockResponse(
+                Inertia::render('test-component')
+            );
 
-        $response->assertInertia('test-component');
-        InertiaTesting::enablePageExistenceCheck();
+            $response->assertInertia('test-component');
+        });
     }
 
     public function test_the_inertia_component_does_not_exist_on_the_filesystem()
@@ -78,15 +78,15 @@ class AssertionsTest extends TestCase
 
     public function test_the_inertia_component_and_props_match()
     {
-        InertiaTesting::disablePageExistenceCheck();
-        $response = $this->makeMockResponse(
-            Inertia::render('test-component', $props = [
-                'foo' => 'bar',
-            ])
-        );
+        InertiaTesting::withoutPageExistenceCheck(function () {
+            $response = $this->makeMockResponse(
+                Inertia::render('test-component', $props = [
+                    'foo' => 'bar',
+                ])
+            );
 
-        $response->assertInertia('test-component', $props);
-        InertiaTesting::enablePageExistenceCheck();
+            $response->assertInertia('test-component', $props);
+        });
     }
 
     public function test_the_inertia_component_and_props_do_not_match()

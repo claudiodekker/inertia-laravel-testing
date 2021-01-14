@@ -40,4 +40,17 @@ class InertiaTesting
     {
         static::$pageShouldExist = true;
     }
+
+    /**
+     * Temporarily disable the page component file existence check.
+     *
+     * @param  Closure $callback
+     * @return void
+     */
+    public static function withoutPageExistenceCheck($callback)
+    {
+        static::disablePageExistenceCheck();
+        $callback();
+        static::enablePageExistenceCheck();
+    }
 }
