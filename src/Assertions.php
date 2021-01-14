@@ -28,15 +28,15 @@ class Assertions
             });
 
             if (! is_null($component)) {
-                if (InertiaTesting::shouldCheckForPageExistence()) {
-                    try {
-                        app('inertia-laravel-testing.view.finder')->find($component);
-                    } catch (InvalidArgumentException $exception) {
-                        PHPUnit::fail(sprintf(Assertions::MESSAGE_INERTIA_COMPONENT_NOT_FOUND, $component));
-                    }
-                }
-
                 PHPUnit::assertEquals($component, $this->viewData('page')['component'], Assertions::MESSAGE_UNEXPECTED_INERTIA_COMPONENT);
+            }
+
+            if (! is_null($component) && InertiaTesting::shouldCheckForPageExistence()) {
+                try {
+                    app('inertia-laravel-testing.view.finder')->find($component);
+                } catch (InvalidArgumentException $exception) {
+                    PHPUnit::fail(sprintf(Assertions::MESSAGE_INERTIA_COMPONENT_NOT_FOUND, $component));
+                }
             }
 
             $this->assertInertiaHasAll($props);
