@@ -33,8 +33,6 @@ class AssertionsTest extends TestCase
 
     public function test_the_inertia_component_matches()
     {
-        config()->set('inertia-testing.page.should_exist', false);
-
         $response = $this->makeMockResponse(
             Inertia::render('test-component')
         );
@@ -44,6 +42,7 @@ class AssertionsTest extends TestCase
 
     public function test_the_inertia_component_does_not_exist_on_the_filesystem()
     {
+        config()->set('inertia-testing.page.should_exist', true);
         $this->expectException(AssertionFailedError::class);
 
         $response = $this->makeMockResponse(
@@ -77,8 +76,6 @@ class AssertionsTest extends TestCase
 
     public function test_the_inertia_component_and_props_match()
     {
-        config()->set('inertia-testing.page.should_exist', false);
-
         $response = $this->makeMockResponse(
             Inertia::render('test-component', $props = [
                 'foo' => 'bar',
