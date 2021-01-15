@@ -13,6 +13,7 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Inertia::setRootView('welcome');
+        config()->set('inertia-testing.page.should_exist', false);
     }
 
     /**

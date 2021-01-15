@@ -40,6 +40,29 @@ class AssertionsTest extends TestCase
         $response->assertInertia('test-component');
     }
 
+    public function test_the_inertia_component_does_not_exist_on_the_filesystem()
+    {
+        config()->set('inertia-testing.page.should_exist', true);
+        $this->expectException(AssertionFailedError::class);
+
+        $response = $this->makeMockResponse(
+            Inertia::render('test-component')
+        );
+
+        $response->assertInertia('test-component');
+    }
+
+    public function test_the_inertia_component_exists_on_the_filesystem()
+    {
+        config()->set('inertia-testing.page.paths', [realpath(__DIR__.'/..')]);
+
+        $response = $this->makeMockResponse(
+            Inertia::render('fixtures/ExamplePage')
+        );
+
+        $response->assertInertia('fixtures/ExamplePage');
+    }
+
     public function test_the_inertia_component_does_not_match()
     {
         $response = $this->makeMockResponse(
