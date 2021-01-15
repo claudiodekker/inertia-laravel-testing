@@ -34,13 +34,13 @@ class AssertionsTest extends TestCase
 
     public function test_the_inertia_component_matches()
     {
-        InertiaTesting::withoutPageExistenceCheck(function () {
-            $response = $this->makeMockResponse(
-                Inertia::render('test-component')
-            );
+        config()->set('inertia-testing.page.should_exist', false);
 
-            $response->assertInertia('test-component');
-        });
+        $response = $this->makeMockResponse(
+            Inertia::render('test-component')
+        );
+
+        $response->assertInertia('test-component');
     }
 
     public function test_the_inertia_component_does_not_exist_on_the_filesystem()
@@ -56,7 +56,7 @@ class AssertionsTest extends TestCase
 
     public function test_the_inertia_component_exists_on_the_filesystem()
     {
-        config(['inertia-laravel-testing.page.paths' => [realpath(__DIR__.'/..')]]);
+        config()->set('inertia-testing.page.paths', [realpath(__DIR__ . '/..')]);
 
         $response = $this->makeMockResponse(
             Inertia::render('fixtures/ExamplePage')
@@ -78,15 +78,15 @@ class AssertionsTest extends TestCase
 
     public function test_the_inertia_component_and_props_match()
     {
-        InertiaTesting::withoutPageExistenceCheck(function () {
-            $response = $this->makeMockResponse(
-                Inertia::render('test-component', $props = [
-                    'foo' => 'bar',
-                ])
-            );
+        config()->set('inertia-testing.page.should_exist', false);
 
-            $response->assertInertia('test-component', $props);
-        });
+        $response = $this->makeMockResponse(
+            Inertia::render('test-component', $props = [
+                'foo' => 'bar',
+            ])
+        );
+
+        $response->assertInertia('test-component', $props);
     }
 
     public function test_the_inertia_component_and_props_do_not_match()

@@ -13,7 +13,7 @@ class Assertions
 {
     public const MESSAGE_NOT_A_VALID_INERTIA_RESPONSE = 'Not a valid Inertia response.';
     public const MESSAGE_UNEXPECTED_INERTIA_COMPONENT = 'Unexpected Inertia page component.';
-    public const MESSAGE_INERTIA_COMPONENT_NOT_FOUND = 'Inertia page component [%s] does not exist.';
+    public const MESSAGE_INERTIA_COMPONENT_NOT_FOUND = 'Inertia page component file [%s] does not exist.';
 
     public function assertInertia()
     {
@@ -31,9 +31,9 @@ class Assertions
                 PHPUnit::assertEquals($component, $this->viewData('page')['component'], Assertions::MESSAGE_UNEXPECTED_INERTIA_COMPONENT);
             }
 
-            if (! is_null($component) && InertiaTesting::shouldCheckForPageExistence()) {
+            if (! is_null($component) && config('inertia-testing.page.should_exist', true)) {
                 try {
-                    app('inertia-laravel-testing.view.finder')->find($component);
+                    app('inertia-testing.view.finder')->find($component);
                 } catch (InvalidArgumentException $exception) {
                     PHPUnit::fail(sprintf(Assertions::MESSAGE_INERTIA_COMPONENT_NOT_FOUND, $component));
                 }
