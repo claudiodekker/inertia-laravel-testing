@@ -2,7 +2,6 @@
 
 namespace ClaudioDekker\Inertia\Tests\Unit;
 
-use ClaudioDekker\Inertia\InertiaTesting;
 use ClaudioDekker\Inertia\Tests\TestCase;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
@@ -56,7 +55,7 @@ class AssertionsTest extends TestCase
 
     public function test_the_inertia_component_exists_on_the_filesystem()
     {
-        config()->set('inertia-testing.page.paths', [realpath(__DIR__ . '/..')]);
+        config()->set('inertia-testing.page.paths', [realpath(__DIR__.'/..')]);
 
         $response = $this->makeMockResponse(
             Inertia::render('fixtures/ExamplePage')
