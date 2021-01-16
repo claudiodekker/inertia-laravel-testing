@@ -2,6 +2,7 @@
 
 namespace ClaudioDekker\Inertia;
 
+use Closure;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
 use PHPUnit\Framework\Assert as PHPUnit;
@@ -49,9 +50,22 @@ class Assert
         return $this;
     }
 
-    public function has($key): self
+    protected function props(string $key = null): array
     {
-        PHPUnit::assertTrue(Arr::has($this->props, $key));
+        if (is_null($key)) {
+            return $this->props;
+        }
+
+        return Arr::get($this->props, $key);
+    }
+
+    public function has($key, Closure $callback = null): self
+    {
+        PHPUnit::assertTrue(Arr::has($this->props(), $key), "Inertia property [$key] does not exist.");
+
+        if (! is_null($callback)) {
+            $callback(new self($this->component, $this->props($key)));
+        }
 
         return $this;
     }

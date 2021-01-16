@@ -174,4 +174,45 @@ class AssertTest extends TestCase
             $inertia->has('prop');
         });
     }
+
+    /** @test */
+    public function it_can_scope_the_assertion_query(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => [
+                    'baz' => 'example',
+                    'prop' => 'value',
+                ]
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->has('bar', function (Assert $inertia) {
+                $inertia->has('baz');
+                $inertia->has('prop');
+            });
+        });
+    }
+
+    /** @test */
+    public function it_cannot_scope_the_assertion_query_when_the_scoped_prop_does_not_exist(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => [
+                    'baz' => 'example',
+                    'prop' => 'value',
+                ]
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->has('baz', function (Assert $inertia) {
+                //
+            });
+        });
+    }
 }
