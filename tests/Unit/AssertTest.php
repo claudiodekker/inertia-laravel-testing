@@ -26,6 +26,7 @@ class AssertTest extends TestCase
         $response->assertOk(); // Make sure we can render the built-in Orchestra 'welcome' view..
 
         $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Not a valid Inertia response.');
 
         $response->assertInertia();
     }
@@ -44,7 +45,7 @@ class AssertTest extends TestCase
     }
 
     /** @test */
-    public function the_inertia_component_matches(): void
+    public function the_component_matches(): void
     {
         $response = $this->makeMockRequest(
             Inertia::render('foo')
@@ -56,13 +57,14 @@ class AssertTest extends TestCase
     }
 
     /** @test */
-    public function the_inertia_component_does_not_match(): void
+    public function the_component_does_not_match(): void
     {
         $response = $this->makeMockRequest(
             Inertia::render('foo')
         );
 
         $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Unexpected Inertia page component.');
 
         $response->assertInertia(function (Assert $inertia) {
             $inertia->component('bar');
@@ -70,28 +72,28 @@ class AssertTest extends TestCase
     }
 
     /** @test */
-    public function the_inertia_component_exists_on_the_filesystem(): void
+    public function the_component_exists_on_the_filesystem(): void
     {
-        config()->set('inertia-testing.page.should_exist', true);
-
         $response = $this->makeMockRequest(
             Inertia::render('fixtures/ExamplePage')
         );
 
+        config()->set('inertia-testing.page.should_exist', true);
         $response->assertInertia(function (Assert $inertia) {
             $inertia->component('fixtures/ExamplePage');
         });
     }
 
     /** @test */
-    public function the_inertia_component_does_not_exist_on_the_filesystem(): void
+    public function the_component_does_not_exist_on_the_filesystem(): void
     {
-        config()->set('inertia-testing.page.should_exist', true);
-        $this->expectException(AssertionFailedError::class);
-
         $response = $this->makeMockRequest(
             Inertia::render('foo')
         );
+
+        config()->set('inertia-testing.page.should_exist', true);
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia page component file [foo] does not exist.');
 
         $response->assertInertia(function (Assert $inertia) {
             $inertia->component('foo');
@@ -101,12 +103,13 @@ class AssertTest extends TestCase
     /** @test */
     public function it_can_enforce_the_component_file_existence_check_when_the_setting_is_globally_disabled(): void
     {
-        config()->set('inertia-testing.page.should_exist', false);
-        $this->expectException(AssertionFailedError::class);
-
         $response = $this->makeMockRequest(
             Inertia::render('foo')
         );
+
+        config()->set('inertia-testing.page.should_exist', false);
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia page component file [foo] does not exist.');
 
         $response->assertInertia(function (Assert $inertia) {
             $inertia->component('foo', true);
@@ -114,15 +117,16 @@ class AssertTest extends TestCase
     }
 
     /** @test */
-    public function the_inertia_component_does_not_exist_on_the_filesystem_when_it_does_not_exist_relative_to_any_of_the_given_paths(): void
+    public function the_component_does_not_exist_on_the_filesystem_when_it_does_not_exist_relative_to_any_of_the_given_paths(): void
     {
+        $response = $this->makeMockRequest(
+            Inertia::render('fixtures/ExamplePage')
+        );
+
         config()->set('inertia-testing.page.should_exist', true);
         config()->set('inertia-testing.page.paths', [realpath(__DIR__)]);
         $this->expectException(AssertionFailedError::class);
-
-        $response = $this->makeMockRequest(
-            Inertia::render('fixtures/ExamplePage')
-        );
+        $this->expectExceptionMessage('Inertia page component file [fixtures/ExamplePage] does not exist.');
 
         $response->assertInertia(function (Assert $inertia) {
             $inertia->component('fixtures/ExamplePage');
@@ -130,15 +134,16 @@ class AssertTest extends TestCase
     }
 
     /** @test */
-    public function the_inertia_component_does_not_exist_on_the_filesystem_when_it_does_not_have_one_of_the_configured_extensions(): void
+    public function the_component_does_not_exist_on_the_filesystem_when_it_does_not_have_one_of_the_configured_extensions(): void
     {
+        $response = $this->makeMockRequest(
+            Inertia::render('fixtures/ExamplePage')
+        );
+
         config()->set('inertia-testing.page.should_exist', true);
         config()->set('inertia-testing.page.extensions', ['bin', 'exe', 'svg']);
         $this->expectException(AssertionFailedError::class);
-
-        $response = $this->makeMockRequest(
-            Inertia::render('fixtures/ExamplePage')
-        );
+        $this->expectExceptionMessage('Inertia page component file [fixtures/ExamplePage] does not exist.');
 
         $response->assertInertia(function (Assert $inertia) {
             $inertia->component('fixtures/ExamplePage');
@@ -146,7 +151,7 @@ class AssertTest extends TestCase
     }
 
     /** @test */
-    public function it_has_the_inertia_prop(): void
+    public function the_prop_exists(): void
     {
         $response = $this->makeMockRequest(
             Inertia::render('foo', [
@@ -160,7 +165,7 @@ class AssertTest extends TestCase
     }
 
     /** @test */
-    public function it_does_not_have_the_inertia_prop(): void
+    public function the_prop_does_not_exist(): void
     {
         $response = $this->makeMockRequest(
             Inertia::render('foo', [
@@ -169,9 +174,58 @@ class AssertTest extends TestCase
         );
 
         $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [prop] does not exist.');
 
         $response->assertInertia(function (Assert $inertia) {
             $inertia->has('prop');
+        });
+    }
+
+    /** @test */
+    public function the_prop_matches_a_value(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => 'value',
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->where('bar', 'value');
+        });
+    }
+
+    /** @test */
+    public function the_prop_does_not_match_a_value(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => 'value',
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [bar] does not match the expected value.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->where('bar', 'invalid');
+        });
+    }
+
+    /** @test */
+    public function the_prop_does_not_match_a_value_when_it_does_not_exist(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => 'value',
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [baz] does not exist.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->where('baz', null);
         });
     }
 
@@ -187,12 +241,15 @@ class AssertTest extends TestCase
             ])
         );
 
-        $response->assertInertia(function (Assert $inertia) {
-            $inertia->has('bar', function (Assert $inertia) {
-                $inertia->has('baz');
-                $inertia->has('prop');
+        $called = false;
+        $response->assertInertia(function (Assert $inertia) use (&$called) {
+            $inertia->has('bar', function (Assert $inertia) use (&$called) {
+                $called = true;
+                $inertia->where('baz', 'example');
             });
         });
+
+        $this->assertTrue($called, 'The scoped query was never actually called.');
     }
 
     /** @test */
@@ -208,9 +265,29 @@ class AssertTest extends TestCase
         );
 
         $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [baz] does not exist.');
 
         $response->assertInertia(function (Assert $inertia) {
             $inertia->has('baz', function (Assert $inertia) {
+                $inertia->where('baz', 'example');
+            });
+        });
+    }
+
+    /** @test */
+    public function it_cannot_scope_the_assertion_query_when_the_scoped_prop_is_a_single_value(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => 'value'
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [bar] is not scopeable.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->has('bar', function (Assert $inertia) {
                 //
             });
         });
