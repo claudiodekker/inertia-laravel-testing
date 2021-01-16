@@ -2,6 +2,7 @@
 
 namespace ClaudioDekker\Inertia;
 
+use Illuminate\Support\Arr;
 use InvalidArgumentException;
 use PHPUnit\Framework\Assert as PHPUnit;
 
@@ -10,9 +11,13 @@ class Assert
     /** @var string */
     private $component;
 
-    protected function __construct(string $component)
+    /** @var array */
+    private $props;
+
+    protected function __construct(string $component, array $props)
     {
         $this->component = $component;
+        $this->props = $props;
     }
 
     public static function fromTestResponse($response) : self
@@ -26,7 +31,7 @@ class Assert
         PHPUnit::assertArrayHasKey('url', $page);
         PHPUnit::assertArrayHasKey('version', $page);
 
-        return new self($page['component']);
+        return new self($page['component'], $page['props']);
     }
 
     public function component(string $component = null, $shouldExist = false): self
@@ -40,6 +45,13 @@ class Assert
                 PHPUnit::fail(sprintf('Inertia page component file [%s] does not exist.', $component));
             }
         }
+
+        return $this;
+    }
+
+    public function has($key): self
+    {
+        PHPUnit::assertTrue(Arr::has($this->props, $key));
 
         return $this;
     }

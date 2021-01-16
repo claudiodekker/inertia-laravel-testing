@@ -144,4 +144,34 @@ class AssertTest extends TestCase
             $inertia->component('fixtures/ExamplePage');
         });
     }
+
+    /** @test */
+    public function it_has_the_inertia_prop(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'prop' => 'value'
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->has('prop');
+        });
+    }
+
+    /** @test */
+    public function it_does_not_have_the_inertia_prop(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => 'value'
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->has('prop');
+        });
+    }
 }
