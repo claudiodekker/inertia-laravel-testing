@@ -7,7 +7,7 @@
 namespace Illuminate\Testing {
 
     /**
-     * @see \ClaudioDekker\Inertia\Assertions
+     * @see \ClaudioDekker\Inertia\TestResponseMacros
      *
      * @method self assertInertia($component = null, $props = [])
      * @method self assertInertiaHas($key, $value = null)
@@ -25,7 +25,7 @@ namespace Illuminate\Testing {
 namespace Illuminate\Foundation\Testing {
 
     /**
-     * @see \ClaudioDekker\Inertia\Assertions
+     * @see \ClaudioDekker\Inertia\TestResponseMacros
      *
      * @method self assertInertia($component = null, $props = [])
      * @method self assertInertiaHas($key, $value = null)

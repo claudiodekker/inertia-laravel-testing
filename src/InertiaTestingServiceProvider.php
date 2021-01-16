@@ -42,14 +42,14 @@ class InertiaTestingServiceProvider extends ServiceProvider
     {
         // Laravel >= 7.0
         if (class_exists(TestResponse::class)) {
-            TestResponse::mixin(new Assertions());
+            TestResponse::mixin(new TestResponseMacros());
 
             return;
         }
 
         // Laravel <= 6.0
         if (class_exists(LegacyTestResponse::class)) {
-            LegacyTestResponse::mixin(new Assertions());
+            LegacyTestResponse::mixin(new TestResponseMacros());
 
             return;
         }
