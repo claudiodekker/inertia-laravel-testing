@@ -88,15 +88,32 @@ class Assert
         return Arr::get($this->props, $key);
     }
 
-    public function has($key, Closure $callback = null): self
+    protected function count($key, $length): self
+    {
+        $this->has($key);
+
+        PHPUnit::assertCount(
+            $length,
+            $this->prop($key),
+            sprintf('Inertia property [%s] does not have the expected size.', $this->dotPath($key))
+        );
+
+        return $this;
+    }
+
+    public function has($key, $value = null): self
     {
         PHPUnit::assertTrue(
             Arr::has($this->prop(), $key),
             sprintf("Inertia property [%s] does not exist.", $this->dotPath($key))
         );
 
-        if (! is_null($callback)) {
-            $callback($this->scope($key));
+        if (is_int($value)) {
+            return $this->count($key, $value);
+        }
+
+        if (is_callable($value)) {
+            $value($this->scope($key));
         }
 
         return $this;

@@ -292,4 +292,41 @@ class AssertTest extends TestCase
             });
         });
     }
+
+    /** @test */
+    public function it_can_count_the_amount_of_items_in_a_given_prop(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => [
+                    'baz' => 'example',
+                    'prop' => 'value',
+                ]
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->has('bar', 2);
+        });
+    }
+
+    /** @test */
+    public function it_fails_when_the_amount_of_items_in_a_given_prop_does_not_match(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => [
+                    'baz' => 'example',
+                    'prop' => 'value',
+                ]
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [bar] does not have the expected size.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->has('bar', 1);
+        });
+    }
 }
