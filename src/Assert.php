@@ -35,14 +35,14 @@ class Assert
             [],
             array_diff(array_keys($this->prop()), $this->interacted),
             $this->path
-                ? sprintf("Unexpected Inertia properties were found in scope [%s].", $this->path)
-                : "Unexpected Inertia properties were found on the root level."
+                ? sprintf('Unexpected Inertia properties were found in scope [%s].', $this->path)
+                : 'Unexpected Inertia properties were found on the root level.'
         );
     }
 
     protected function interactsWith(string $key): void
     {
-        $prop = Str::before($key, ".");
+        $prop = Str::before($key, '.');
 
         if (! in_array($prop, $this->interacted, true)) {
             $this->interacted[] = $prop;
@@ -62,7 +62,7 @@ class Assert
             return $key;
         }
 
-        return implode(".", [$this->path, $key]);
+        return implode('.', [$this->path, $key]);
     }
 
     protected function prop(string $key = null)
@@ -88,7 +88,7 @@ class Assert
         $prop = $this->prop($key);
         $path = $this->dotPath($key);
 
-        PHPUnit::assertIsArray($prop, sprintf("Inertia property [%s] is not scopeable.", $path));
+        PHPUnit::assertIsArray($prop, sprintf('Inertia property [%s] is not scopeable.', $path));
 
         return new self(
             $this->component,
@@ -97,7 +97,7 @@ class Assert
         );
     }
 
-    public static function fromTestResponse($response) : self
+    public static function fromTestResponse($response): self
     {
         try {
             $response->assertViewHas('page');
@@ -134,7 +134,7 @@ class Assert
     {
         PHPUnit::assertTrue(
             Arr::has($this->prop(), $key),
-            sprintf("Inertia property [%s] does not exist.", $this->dotPath($key))
+            sprintf('Inertia property [%s] does not exist.', $this->dotPath($key))
         );
 
         $this->interactsWith($key);
