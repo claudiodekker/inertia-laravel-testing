@@ -151,7 +151,7 @@ class AssertTest extends TestCase
     }
 
     /** @test */
-    public function the_prop_exists(): void
+    public function it_has_a_prop(): void
     {
         $response = $this->makeMockRequest(
             Inertia::render('foo', [
@@ -165,7 +165,7 @@ class AssertTest extends TestCase
     }
 
     /** @test */
-    public function the_prop_does_not_exist(): void
+    public function it_does_not_have_a_prop(): void
     {
         $response = $this->makeMockRequest(
             Inertia::render('foo', [
@@ -178,6 +178,41 @@ class AssertTest extends TestCase
 
         $response->assertInertia(function (Assert $inertia) {
             $inertia->has('prop');
+        });
+    }
+
+    /** @test */
+    public function it_has_a_nested_prop(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'example' => [
+                    'nested' => 'nested-value',
+                ],
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->has('example.nested');
+        });
+    }
+
+    /** @test */
+    public function it_does_not_have_a_nested_prop(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'example' => [
+                    'nested' => 'nested-value',
+                ],
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [example.another] does not exist.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->has('example.another');
         });
     }
 
@@ -209,6 +244,41 @@ class AssertTest extends TestCase
 
         $response->assertInertia(function (Assert $inertia) {
             $inertia->where('bar', 'invalid');
+        });
+    }
+
+    /** @test */
+    public function the_nested_prop_matches_a_value(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'example' => [
+                    'nested' => 'nested-value',
+                ],
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->where('example.nested', 'nested-value');
+        });
+    }
+
+    /** @test */
+    public function the_nested_prop_does_not_match_a_value(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'example' => [
+                    'nested' => 'nested-value',
+                ],
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [example.nested] does not match the expected value.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->where('example.nested', 'another-value');
         });
     }
 
