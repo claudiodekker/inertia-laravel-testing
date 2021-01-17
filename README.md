@@ -150,7 +150,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 );
 ```
 
-> **NOTE**: We recommend to only use this assertion when you're using [asset versioning](https://inertiajs.com/asset-versioning), 
+> **NOTE**: We recommend to only use this assertion when you are using [asset versioning](https://inertiajs.com/asset-versioning), 
 > which is disabled by default on a fresh Inertia installation.
 
 ### `has`
@@ -181,20 +181,20 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 );
 ```
 
-The above will first assert that the property exists, and directly after will assert that it is the given size.
-This means that there is no need to manually use `has` to check that the property exists.
+The above will first assert that the property exists, as well as that is the expected size.
+This means that there is no need to manually ensure that the property exists using a separate `has` call.
 
 #### Scoping
 
-In a previous version of this library, testing code could become fairly verbose, as the deeper your assertions went, 
-the longer your assertion keys became. For instance, here is an example of code we used to write, taken directly from 
-one of our codebases:
+In a previous version of this library, testing code could become fairly verbose, and the deeper your assertions went, 
+the more complex your assertions became. For instance, here is an example of code we used to write, taken directly from 
+one of our projects:
 ```php
 $response->assertInertiaHas('message.comments.0.files.0.url', '/storage/attachments/example-attachment.pdf');
 $response->assertInertiaHas('message.comments.0.files.0.name', 'example-attachment.pdf');
 ```
 
-Fortunately, we no longer have to do this. Instead, we an initiate a property scope using the `has` method:
+Fortunately, we no longer have to do this. Instead, we can simply scope properties using the `has` method:
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
     // Creating a single-level property scope
@@ -215,7 +215,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 );
 ```
 
-While this is already a significant improvement, that's not all. As you can see in the example above, you'll often run 
+While this is already a significant improvement, that's not all: As you can see in the example above, you'll often run 
 into situations where you'll want to _check that a property has a certain length_, and then tap into one of the entries
 to make sure that all the props there are as expected.
 
