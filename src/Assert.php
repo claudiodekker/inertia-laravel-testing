@@ -32,17 +32,6 @@ class Assert
         $this->props = $props;
     }
 
-    public function interacted(): void
-    {
-        PHPUnit::assertSame(
-            [],
-            array_diff(array_keys($this->prop()), $this->interacted),
-            $this->path
-                ? sprintf('Unexpected Inertia properties were found in scope [%s].', $this->path)
-                : 'Unexpected Inertia properties were found on the root level.'
-        );
-    }
-
     protected function interactsWith(string $key): void
     {
         $prop = Str::before($key, '.');
@@ -50,13 +39,6 @@ class Assert
         if (! in_array($prop, $this->interacted, true)) {
             $this->interacted[] = $prop;
         }
-    }
-
-    public function etc(): self
-    {
-        $this->interacted = array_keys($this->prop());
-
-        return $this;
     }
 
     protected function dotPath($key): string
@@ -116,6 +98,24 @@ class Assert
         return new self($page['component'], $page['props']);
     }
 
+    public function interacted(): void
+    {
+        PHPUnit::assertSame(
+            [],
+            array_diff(array_keys($this->prop()), $this->interacted),
+            $this->path
+                ? sprintf('Unexpected Inertia properties were found in scope [%s].', $this->path)
+                : 'Unexpected Inertia properties were found on the root level.'
+        );
+    }
+
+    public function etc(): self
+    {
+        $this->interacted = array_keys($this->prop());
+
+        return $this;
+    }
+
     public function component(string $component = null, $shouldExist = false): self
     {
         PHPUnit::assertSame($component, $this->component, 'Unexpected Inertia page component.');
@@ -131,25 +131,23 @@ class Assert
         return $this;
     }
 
-    public function hasAll(array $bindings): self
+    public function hasAll($key): self
     {
-        foreach ($bindings as $key => $value) {
-            if (is_int($key)) {
-                $this->has($value);
+        $keys = is_array($key) ? $key : func_get_args();
+
+        foreach ($keys as $prop => $count) {
+            if (is_int($prop)) {
+                $this->has($count);
             } else {
-                $this->has($key, $value);
+                $this->has($prop, $count);
             }
         }
 
         return $this;
     }
 
-    public function has($key, $value = null): self
+    public function has(string $key, $value = null): self
     {
-        if (! is_string($key)) {
-            return $this->hasAll($key);
-        }
-
         PHPUnit::assertTrue(
             Arr::has($this->prop(), $key),
             sprintf('Inertia property [%s] does not exist.', $this->dotPath($key))
@@ -172,13 +170,24 @@ class Assert
         return $this;
     }
 
-    public function misses($key): self
+    public function missesAll($key): self
+    {
+        $keys = is_array($key) ? $key : func_get_args();
+
+        foreach ($keys as $prop) {
+            $this->misses($prop);
+        }
+
+        return $this;
+    }
+
+    public function misses(string $key): self
     {
         $this->interactsWith($key);
 
         PHPUnit::assertNotTrue(
             Arr::has($this->prop(), $key),
-            sprintf('Inertia property [%s] exists when it was not expected to.', $this->dotPath($key))
+            sprintf('Inertia property [%s] was found while it was expected to be missing.', $this->dotPath($key))
         );
 
         return $this;
