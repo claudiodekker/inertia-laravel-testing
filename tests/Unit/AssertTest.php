@@ -639,6 +639,69 @@ class AssertTest extends TestCase
     }
 
     /** @test */
+    public function it_can_directly_scope_onto_the_first_item_when_asserting_that_a_prop_has_a_length_greater_than_zero(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => [
+                    ['key' => 'first'],
+                    ['key' => 'second'],
+                ],
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->has('bar', 2, function (Assert $inertia) {
+                $inertia->where('key', 'first');
+            });
+        });
+    }
+
+    /** @test */
+    public function it_cannot_directly_scope_onto_the_first_item_when_asserting_that_a_prop_has_a_length_of_zero(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => [
+                    ['key' => 'first'],
+                    ['key' => 'second'],
+                ],
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Cannot scope directly onto the first entry of property [bar] when asserting that it has a size of 0.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->has('bar', 0, function (Assert $inertia) {
+                $inertia->where('key', 'first');
+            });
+        });
+    }
+
+    /** @test */
+    public function it_cannot_directly_scope_onto_the_first_item_when_it_does_not_match_the_expected_size(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => [
+                    ['key' => 'first'],
+                    ['key' => 'second'],
+                ],
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [bar] does not have the expected size.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->has('bar', 1, function (Assert $inertia) {
+                $inertia->where('key', 'first');
+            });
+        });
+    }
+
+    /** @test */
     public function it_fails_when_it_does_not_interact_with_all_props_in_the_scope_at_least_once(): void
     {
         $response = $this->makeMockRequest(

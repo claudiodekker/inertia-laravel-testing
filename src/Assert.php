@@ -75,20 +75,18 @@ class Assert
         return $this;
     }
 
-    protected function scope($key): self
+    protected function scope($key, Closure $callback): self
     {
         $props = $this->prop($key);
         $path = $this->dotPath($key);
 
         PHPUnit::assertIsArray($props, sprintf('Inertia property [%s] is not scopeable.', $path));
 
-        return new self(
-            $this->component,
-            $props,
-            $this->url,
-            $this->version,
-            $path
-        );
+        $scope = new self($this->component, $props, $this->url, $this->version, $path);
+        $callback($scope);
+        $scope->interacted();
+
+        return $this;
     }
 
     public static function fromTestResponse($response): self
@@ -171,7 +169,7 @@ class Assert
         return $this;
     }
 
-    public function has(string $key, $value = null): self
+    public function has(string $key, $value = null, Closure $scope = null): self
     {
         PHPUnit::assertTrue(
             Arr::has($this->prop(), $key),
@@ -180,16 +178,22 @@ class Assert
 
         $this->interactsWith($key);
 
+        if (is_int($value) && ! is_null($scope)) {
+            $path = $this->dotPath($key);
+
+            PHPUnit::assertTrue($value > 0, sprintf('Cannot scope directly onto the first entry of property [%s] when asserting that it has a size of 0.', $path));
+            PHPUnit::assertIsArray($prop = $this->prop($key), sprintf('Direct scoping is currently unsupported for non-array properties such as [%s].', $path));
+            $this->count($key, $value);
+
+            return $this->scope($key.'.'.array_keys($prop)[0], $scope);
+        }
+
         if (is_int($value)) {
             return $this->count($key, $value);
         }
 
         if (is_callable($value)) {
-            $scope = $this->scope($key);
-
-            $value($scope);
-
-            $scope->interacted();
+            $this->scope($key, $value);
         }
 
         return $this;
