@@ -100,7 +100,7 @@ Reducing verbosity:
 
 ---
 
-### Component
+## Component
 
 To assert that the Inertia page has the page component you expect, you can use the `component` assertion:
 
@@ -118,7 +118,7 @@ All of these settings are configurable using our [configuration file](#publishin
 
 > **NOTE:** If you are missing any logical default extensions such as those for React, please let us know which ones should be supported by [opening an issue](https://github.com/claudiodekker/inertia-laravel-testing/issues/new)!
 
-#### Disabling or enabling a single lookup
+### Disabling or enabling a single lookup
 
 To disable this filesystem lookup on a per-assertion basis, you may pass `false` as the second argument:
 
@@ -130,7 +130,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 
 Alternatively, if you've disabled the [automatic component filesystem lookup in the configuration file](#publishing-the-configuration-file), you can enable the lookup on a per-assertion basis by passing `true` as the second argument instead.
 
-### (Page) URL
+## (Page) URL
 
 To assert that the Page URL matches what you expect, you may use the `url` assertion:
 
@@ -140,7 +140,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 );
 ```
 
-### (Asset) Version
+## (Asset) Version
 
 To assert that the (asset) version matches what you expect, you may use the `version` assertion:
 
@@ -154,8 +154,8 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 
 > **NOTE**: We recommend to only use this assertion when you are using [asset versioning](https://inertiajs.com/asset-versioning).
 
-### `has`
-#### Basic Usage
+## `has`
+### Basic Usage
 To assert that Inertia **has** a property, you may use the `has` method:
 
 ```php
@@ -168,7 +168,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 );
 ```
 
-#### Count / Size / Length
+### Count / Size / Length
 To assert that Inertia **has** a property of a specific size/length, you may provide the expected size as the second argument:
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
@@ -183,7 +183,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 The above will first assert that the property exists, as well as that is the expected size.
 This means that there is no need to manually ensure that the property exists using a separate `has` call.
 
-#### Scoping
+### Scoping
 
 In a previous version of this library, testing code could become fairly verbose, and the deeper your assertions went, 
 the more complex your assertions became. For instance, here is an example of code we used to write, taken directly from 
@@ -234,7 +234,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 );
 ```
 
-### `where`
+## `where`
 
 So far, we've primarily been describing how you can check that Inertia props exist and how to count them, but we haven't
 actually described how to assert that an Inertia property has a value. This can be done using `where`:
@@ -288,7 +288,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 );
 ```
 
-### `etc`
+## `etc`
 By default, this package will automatically make sure that you didn't forget to assert against some props, by detecting
 what props you've interacted with. However, at times, you might run into situations where you're working with unreliable
 data (such as from a feed) or with data that you really don't want to do anything with. For those situations, the `etc`
@@ -327,15 +327,15 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 );
 ```
 
-### Reducing verbosity
+## Reducing verbosity
 To reduce the amount of `where`, `has` or `misses` calls, there are a couple of convenience methods that allow you to
 make these same assertions in a slightly less-verbose way.
 
-#### `has`
+### `has`
 Instead of making multiple `has` calls, you may use the `hasAll` assertion instead. Depending on how you provide 
 arguments, this method will perform a series of slightly different but predictable assertion:
 
-##### Basic `has` usage
+#### Basic `has` usage
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
     // Before
@@ -353,7 +353,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 );
 ```
 
-##### Count / Size / Length
+#### Count / Size / Length
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
     // Before
@@ -368,7 +368,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 );
 ```
 
-#### `where`
+### `where`
 To reduce the amount of `where` calls, the `whereAll` method exists.
 
 Since this method checks properties against values by design, there isn't a lot of flexibility like with some of these
@@ -388,7 +388,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 );
 ```
 
-#### `misses`
+### `misses`
 Instead of making multiple `misses` call, you may use `missesAll` instead. Similar to basic `hasAll` usage, this 
 assertion accepts both a single array or a list of arguments, at which point it will assert that the given props
 do not exist.
