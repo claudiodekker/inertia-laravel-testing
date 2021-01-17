@@ -254,7 +254,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 Under the hood, this first calls the `has` method to ensure that the property exists, and then uses an assertion to 
 make sure that the values match. This means that there is no need to manually call `has` and `where` on the same prop.
 
-### Eloquent `Model`, `Arrayable`, or `Responsable`
+#### Automatic Eloquent `Model`, `Arrayable`, or `Responsable` transforming
 
 For convenience, the `where` method doesn't just assert that strings or integers match, but also has the ability to
 test directly against Eloquent Models, classes that implement the `Arrayable` interface, or the `Responsable` interface.
