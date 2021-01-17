@@ -82,7 +82,7 @@ class AssertTest extends TestCase
             Inertia::render('fixtures/ExamplePage')
         );
 
-        config()->set('inertia-testing.page.should_exist', true);
+        config()->set('inertia.page.should_exist', true);
         $response->assertInertia(function (Assert $inertia) {
             $inertia->component('fixtures/ExamplePage');
         });
@@ -95,7 +95,7 @@ class AssertTest extends TestCase
             Inertia::render('foo')
         );
 
-        config()->set('inertia-testing.page.should_exist', true);
+        config()->set('inertia.page.should_exist', true);
         $this->expectException(AssertionFailedError::class);
         $this->expectExceptionMessage('Inertia page component file [foo] does not exist.');
 
@@ -111,7 +111,7 @@ class AssertTest extends TestCase
             Inertia::render('foo')
         );
 
-        config()->set('inertia-testing.page.should_exist', false);
+        config()->set('inertia.page.should_exist', false);
         $this->expectException(AssertionFailedError::class);
         $this->expectExceptionMessage('Inertia page component file [foo] does not exist.');
 
@@ -127,8 +127,8 @@ class AssertTest extends TestCase
             Inertia::render('fixtures/ExamplePage')
         );
 
-        config()->set('inertia-testing.page.should_exist', true);
-        config()->set('inertia-testing.page.paths', [realpath(__DIR__)]);
+        config()->set('inertia.page.should_exist', true);
+        config()->set('inertia.page.paths', [realpath(__DIR__)]);
         $this->expectException(AssertionFailedError::class);
         $this->expectExceptionMessage('Inertia page component file [fixtures/ExamplePage] does not exist.');
 
@@ -144,8 +144,8 @@ class AssertTest extends TestCase
             Inertia::render('fixtures/ExamplePage')
         );
 
-        config()->set('inertia-testing.page.should_exist', true);
-        config()->set('inertia-testing.page.extensions', ['bin', 'exe', 'svg']);
+        config()->set('inertia.page.should_exist', true);
+        config()->set('inertia.page.extensions', ['bin', 'exe', 'svg']);
         $this->expectException(AssertionFailedError::class);
         $this->expectExceptionMessage('Inertia page component file [fixtures/ExamplePage] does not exist.');
 

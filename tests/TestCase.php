@@ -16,8 +16,8 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Inertia::setRootView('welcome');
-        config()->set('inertia-testing.page.should_exist', false);
-        config()->set('inertia-testing.page.paths', [realpath(__DIR__)]);
+        config()->set('inertia.page.should_exist', false);
+        config()->set('inertia.page.paths', [realpath(__DIR__)]);
     }
 
     /**

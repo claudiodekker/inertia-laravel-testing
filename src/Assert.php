@@ -131,9 +131,9 @@ class Assert
     {
         PHPUnit::assertSame($value, $this->component, 'Unexpected Inertia page component.');
 
-        if ($shouldExist || config('inertia-testing.page.should_exist', true)) {
+        if ($shouldExist || config('inertia.page.should_exist', true)) {
             try {
-                app('inertia-testing.view.finder')->find($value);
+                app('inertia.view.finder')->find($value);
             } catch (InvalidArgumentException $exception) {
                 PHPUnit::fail(sprintf('Inertia page component file [%s] does not exist.', $value));
             }
