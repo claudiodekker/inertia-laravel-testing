@@ -86,7 +86,7 @@ Basics:
 
 In-depth:
 - [`has`](#has)
-    - [Count / Size / Length](count--size--length)
+    - [Count / Size / Length](#count--size--length)
     - [Scoping](#scoping)
 - [`where`](#where)
     - [Using a Closure](#using-a-closure)
