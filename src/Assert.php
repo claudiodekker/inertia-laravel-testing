@@ -2,9 +2,8 @@
 
 namespace ClaudioDekker\Inertia;
 
-use Closure;
 use Illuminate\Support\Arr;
-use Illuminate\Testing\TestResponse;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 use PHPUnit\Framework\Assert as PHPUnit;
 use PHPUnit\Framework\AssertionFailedError;
@@ -20,6 +19,43 @@ class Assert
     /** @var string */
     private $path;
 
+    /** @var array */
+    protected $interacted = [];
+
+    protected function __construct(string $component, array $props, string $path = null)
+    {
+        $this->path = $path;
+        $this->component = $component;
+        $this->props = $props;
+    }
+
+    public function interacted(): void
+    {
+        PHPUnit::assertSame(
+            [],
+            array_diff(array_keys($this->prop()), $this->interacted),
+            $this->path
+                ? sprintf("Unexpected Inertia properties were found in scope [%s].", $this->path)
+                : "Unexpected Inertia properties were found on the root level."
+        );
+    }
+
+    protected function interactsWith(string $key): void
+    {
+        $prop = Str::before($key, ".");
+
+        if (! in_array($prop, $this->interacted, true)) {
+            $this->interacted[] = $prop;
+        }
+    }
+
+    public function etc(): self
+    {
+        $this->interacted = array_keys($this->prop());
+
+        return $this;
+    }
+
     protected function dotPath($key): string
     {
         if (is_null($this->path)) {
@@ -29,11 +65,22 @@ class Assert
         return implode(".", [$this->path, $key]);
     }
 
-    protected function __construct(string $component, array $props, string $path = null)
+    protected function prop(string $key = null)
     {
-        $this->path = $path;
-        $this->component = $component;
-        $this->props = $props;
+        return Arr::get($this->props, $key);
+    }
+
+    protected function count($key, $length): self
+    {
+        $this->has($key);
+
+        PHPUnit::assertCount(
+            $length,
+            $this->prop($key),
+            sprintf('Inertia property [%s] does not have the expected size.', $this->dotPath($key))
+        );
+
+        return $this;
     }
 
     protected function scope($key): self
@@ -50,7 +97,7 @@ class Assert
         );
     }
 
-    public static function fromTestResponse(TestResponse $response) : self
+    public static function fromTestResponse($response) : self
     {
         try {
             $response->assertViewHas('page');
@@ -83,37 +130,25 @@ class Assert
         return $this;
     }
 
-    protected function prop(string $key = null)
-    {
-        return Arr::get($this->props, $key);
-    }
-
-    protected function count($key, $length): self
-    {
-        $this->has($key);
-
-        PHPUnit::assertCount(
-            $length,
-            $this->prop($key),
-            sprintf('Inertia property [%s] does not have the expected size.', $this->dotPath($key))
-        );
-
-        return $this;
-    }
-
-    public function has($key, $value = null): self
+    public function has(string $key, $value = null): self
     {
         PHPUnit::assertTrue(
             Arr::has($this->prop(), $key),
             sprintf("Inertia property [%s] does not exist.", $this->dotPath($key))
         );
 
+        $this->interactsWith($key);
+
         if (is_int($value)) {
             return $this->count($key, $value);
         }
 
         if (is_callable($value)) {
-            $value($this->scope($key));
+            $scope = $this->scope($key);
+
+            $value($scope);
+
+            $scope->interacted();
         }
 
         return $this;

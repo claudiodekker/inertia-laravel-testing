@@ -13,6 +13,8 @@ class TestResponseMacros
 
             if (! is_null($callback)) {
                 $callback($assert);
+
+                $assert->interacted();
             }
 
             return $this;

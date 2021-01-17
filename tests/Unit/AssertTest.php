@@ -155,7 +155,7 @@ class AssertTest extends TestCase
     {
         $response = $this->makeMockRequest(
             Inertia::render('foo', [
-                'prop' => 'value'
+                'prop' => 'value',
             ])
         );
 
@@ -169,7 +169,7 @@ class AssertTest extends TestCase
     {
         $response = $this->makeMockRequest(
             Inertia::render('foo', [
-                'bar' => 'value'
+                'bar' => 'value',
             ])
         );
 
@@ -237,7 +237,7 @@ class AssertTest extends TestCase
                 'bar' => [
                     'baz' => 'example',
                     'prop' => 'value',
-                ]
+                ],
             ])
         );
 
@@ -245,7 +245,9 @@ class AssertTest extends TestCase
         $response->assertInertia(function (Assert $inertia) use (&$called) {
             $inertia->has('bar', function (Assert $inertia) use (&$called) {
                 $called = true;
-                $inertia->where('baz', 'example');
+                $inertia
+                    ->where('baz', 'example')
+                    ->where('prop', 'value');
             });
         });
 
@@ -260,7 +262,7 @@ class AssertTest extends TestCase
                 'bar' => [
                     'baz' => 'example',
                     'prop' => 'value',
-                ]
+                ],
             ])
         );
 
@@ -279,7 +281,7 @@ class AssertTest extends TestCase
     {
         $response = $this->makeMockRequest(
             Inertia::render('foo', [
-                'bar' => 'value'
+                'bar' => 'value',
             ])
         );
 
@@ -301,7 +303,7 @@ class AssertTest extends TestCase
                 'bar' => [
                     'baz' => 'example',
                     'prop' => 'value',
-                ]
+                ],
             ])
         );
 
@@ -318,7 +320,7 @@ class AssertTest extends TestCase
                 'bar' => [
                     'baz' => 'example',
                     'prop' => 'value',
-                ]
+                ],
             ])
         );
 
@@ -327,6 +329,85 @@ class AssertTest extends TestCase
 
         $response->assertInertia(function (Assert $inertia) {
             $inertia->has('bar', 1);
+        });
+    }
+
+    /** @test */
+    public function it_fails_when_it_does_not_interact_with_all_props_in_the_scope_at_least_once(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => [
+                    'baz' => 'example',
+                    'prop' => 'value',
+                ],
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Unexpected Inertia properties were found in scope [bar].');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->has('bar', function (Assert $inertia) {
+                $inertia->where('baz', 'example');
+            });
+        });
+    }
+
+    /** @test */
+    public function it_fails_when_it_does_not_interact_with_all_props_on_the_root_level_at_least_once(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'foo' => 'bar',
+                'bar' => 'baz',
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Unexpected Inertia properties were found on the root level.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->has('foo');
+        });
+    }
+
+    /** @test */
+    public function it_can_disable_the_interaction_check_for_the_current_scope(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => true,
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->etc();
+        });
+    }
+
+    /** @test */
+    public function it_cannot_disable_the_interaction_check_for_any_other_scopes(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => true,
+                'baz' => [
+                    'foo' => 'bar',
+                    'example' => 'value',
+                ],
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Unexpected Inertia properties were found in scope [baz].');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia
+                ->etc()
+                ->has('baz', function (Assert $inertia) {
+                    $inertia->where('foo', 'bar');
+                });
         });
     }
 }
