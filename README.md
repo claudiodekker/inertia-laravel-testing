@@ -69,7 +69,8 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 > If you are using this package on an older version of PHP, you will unfortunately need to use a regular callback instead:
 > ```php
 > $response->assertInertia(function (Assert $inertia) {
->     $inertia->component('Podcasts/Show')
+>     $inertia
+>            ->component('Podcasts/Show')
 >            ->has('podcast', /* ...*/);
 > });
 > ```
@@ -161,7 +162,7 @@ To assert that Inertia **has** a property, you may use the `has` method:
 $response->assertInertia(fn (Assert $inertia) => $inertia
     // Checking a root-level property
     ->has('podcast')
-    
+
     // Checking that the podcast prop has a nested id property using "dot" notation
     ->has('podcast.id')
 );
@@ -173,7 +174,7 @@ To assert that Inertia **has** a property of a specific size/length, you may pro
 $response->assertInertia(fn (Assert $inertia) => $inertia
     // Checking that the root-level podcasts property exists and has 7 items
     ->has('podcast', 7)
-    
+
     // Checking that the podcast has 11 subscribers using "dot" notation
     ->has('podcast.subscribers', 11)
 );
@@ -200,7 +201,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
         // We can now continue chaining methods
         ->has('subject')
         ->has('comments', 5)
-        
+
         // And can even create a deeper scope using "dot" notation
         ->has('comments.0', fn (Assert $inertia) => $inertia
             ->has('body')
@@ -222,19 +223,18 @@ To simplify this, you can simply combine the two calls:
 $response->assertInertia(fn (Assert $inertia) => $inertia
     ->has('message', fn (Assert $inertia) => $inertia
         ->has('subject')
-
         // Assert that there are five comments, and automatically scope into the first comment.
         ->has('comments', 5, fn(Assert $inertia) => $inertia
             ->has('body')
             ->has('files', 1, fn (Assert $inertia) => $inertia
-                // 
+                ->has('url')
             )
         )
     )
 );
 ```
 
-## `where`
+### `where`
 
 So far, we've primarily been describing how you can check that Inertia props exist and how to count them, but we haven't
 actually described how to assert that an Inertia property has a value. This can be done using `where`:
@@ -244,7 +244,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
     ->has('message', fn (Assert $inertia) => $inertia
         // Assert that the subject prop matches the given message
         ->where('subject', 'This is an example message')
-        
+
         // or, the exact same, but for deeply nested values
         ->where('comments.0.files.0.name', 'example-attachment.pdf')
     )
@@ -280,7 +280,7 @@ the assertion:
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
     ->where('foo', fn ($value) => $value === 'bar')
-    
+
     // or, as expected, for deeply nested values:
     ->where('deeply.nested.foo', function ($value) {
         return $value === 'bar';
@@ -300,6 +300,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
         ->has('subject')
         ->has('comments')
         ->etc()
+
     )
 );
 ```
@@ -340,13 +341,13 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
     // Before
     ->has('messages')
     ->has('subscribers')
-    
+
     // After
     ->hasAll([
         'messages',
         'subscribers',
     ])
-    
+
     // Alternative
     ->hasAll('messages', 'subscribers')
 );
@@ -358,7 +359,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
     // Before
     ->has('messages', 5)
     ->has('subscribers', 11)
-    
+
     // After
     ->hasAll([
         'messages' => 5,
@@ -378,7 +379,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
     // Before
     ->where('subject', 'Hello World')
     ->has('user.name', 'Claudio')
-    
+
     // After
     ->whereAll([
         'subject' => 'Hello World',
@@ -397,13 +398,13 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
     // Before
     ->misses('subject')
     ->misses('user.name')
-    
+
     // After
     ->missesAll([
         'subject',
         'user.name',
     ])
-    
+
     // Alternative
     ->missesAll('subject', 'user.name')
 );
