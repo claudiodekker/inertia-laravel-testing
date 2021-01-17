@@ -31,28 +31,28 @@ composer require --dev claudiodekker/inertia-laravel-testing
 
 ## Usage
 
-To start testing your Inertia pages, you first chain the `assertInertia()` method onto your `TestResponse` responses:
+To start testing your Inertia pages, you may chain the `assertInertia` method on the end of your `TestResponse` responses.
+You may then (optionally) provide a callback to this method, an chain any of the [available assertions](#available-assertions) onto that:
 
 ```php
 // ...
 
-$response->assertInertia();
+$response->assertInertia(fn ($inertia) => $inertia
+    ->someAssertionHere()
+    ->anotherAssertionHere()
+);
 ```
 
-By default, this will only assert that the request came back with a valid Inertia page response.
-
-In order to assert more things, such as that a certain prop matches an expected value, you may provide a callback/closure, on which you can then chain any of the [available assertions](#available-assertions). For example:
-
+When using this library to it's fullest extent, your tests will look similar to this:
 ```php
 use ClaudioDekker\Inertia\Assert;
 
-// Arrange some data to assert against
+// ...
+
 $podcast = Podcast::factory()->create([/* ... */]);
 
-// Visit the Inertia page
-$response = $this->as('jonathan')->get('/podcasts/' . $podcast->id);
+// ...
 
-// Make Assertions
 $response->assertInertia(fn (Assert $inertia) => $inertia
     ->component('Podcasts/Show')
     ->has('podcast', fn (Assert $inertia) => $inertia
@@ -86,7 +86,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 > });
 > ```
 
-> **NOTE**: While type-hinting the `Assert` isn't necessary (and will definitely cause _some_ minor breakage once migrating from this package), it does allow your IDE to suggest which methods can be chained.
+> **NOTE**: While type-hinting the `Assert` isn't necessary (and will definitely cause _some_ minor breakage once migrating away from this package), it allows your IDE to automatically suggest the assertion methods that can be chained.
 
 ## Available Assertions
 
