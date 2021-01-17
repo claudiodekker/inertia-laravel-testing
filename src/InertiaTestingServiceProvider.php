@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Testing\TestResponse;
 use Illuminate\View\FileViewFinder;
-use LogicException;
 use Inertia\Assert as InertiaAssertions;
+use LogicException;
 
 class InertiaTestingServiceProvider extends ServiceProvider
 {
