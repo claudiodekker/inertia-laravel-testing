@@ -18,8 +18,8 @@
 
 # [inertiajs/inertia-laravel](https://github.com/inertiajs/inertia-laravel) Testing Helpers
 
-> **NOTE**: This package will become part of [inertiajs/inertia-laravel](https://github.com/inertiajs/inertia-laravel) on **March 1st, 2021**, and upgrading should be as simple as removing this package from your dependencies entirely.
-> This package WILL remain available for installation, but WILL NOT receive any further (security) updates from that point forward.
+> **NOTE**: This package will become part of [inertiajs/inertia-laravel](https://github.com/inertiajs/inertia-laravel) on **March 1st, 2021**, with upgrading being as simple as removing this package from your dependencies.
+> Once this happens, this package WILL remain available for installation, but WILL NOT receive any further (security) updates going forward.
 
 ## Installation
 
@@ -31,15 +31,20 @@ composer require --dev claudiodekker/inertia-laravel-testing
 
 ## Usage
 
-In order to start testing your Inertia responses, all you have to do is chain `assertInertia()` onto your `TestResponse` responses.
-You may then (optionally) pass through a callback to this method, on which you may then chain your assertions.
+To start testing your Inertia views, simply chain the `assertInertia()` method onto your `TestResponse` response.
+You may then (optionally) pass a callback to this method, allowing you to chain more granual Inertia assertions:
+
 
 ```php
 use ClaudioDekker\Inertia\Assert;
 
-$podcast = Podcast::factory()->state([/* ... */])->create();
+// Arrange some data to assert against
+$podcast = Podcast::factory()->create([/* ... */]);
+
+// Visit the Inertia page
 $response = $this->as('jonathan')->get('/podcasts/' . $podcast->id);
 
+// Make Assertions
 $response->assertInertia(fn (Assert $inertia) => $inertia
     ->component('Podcasts/Show')
     ->has('podcast', fn (Assert $inertia) => $inertia
@@ -76,14 +81,14 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 ## Available Assertions
 
 The API introduced in V2 is very simple, and only consists of a few (fairly intuitive) methods, all of which are based on
-a basic check, that allows you to assert that the given page is an Inertia rendered view:
+a basic check, that allows you to assert that the given page is an Inertia page:
 ```php
 $response->assertInertia();
 ```
 
 ### Component
 
-To assert that the given page is not just an Inertia rendered view, but also has the page component you expect,
+To assert that the given page is not just an Inertia page, but also has the page component you expect,
 we'll have to do a bit more:
 
 ```php
@@ -92,12 +97,13 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 );
 ```
 
-Besides asserting that the component in the Inertia response matches, this assertion also tries to locate it on the
-filesystem and fails if it cannot find it. **By default**, and using the example above, it will try to look for your page 
-component relative to the `resources/js/Pages` folder, and will only accept files have the extensions `.vue` or 
-`.svelte` extension.
+Apart from asserting that the component matches what we'd expect, this assertion also automatically tries to locate
+it on the filesystem, and fails the assertion if it cannot find it. 
 
-To disable this check on a per-component assertion basis, you may pass `false` as the second argument of this assertion.
+**By default** it will try to look for your page components relative to the `resources/js/Pages` folder, and will 
+only accept files have the extensions `.vue` or `.svelte` extension.
+
+To disable this check on a per-component assertion basis, you may pass `false` as the assertion's second argument.
 This will still assert that the component name in the Inertia response matches, but will not check for the file's 
 existence:
 ```php
