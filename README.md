@@ -274,8 +274,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 ### Using a Closure
 
 Finally, it's also possible to assert against a callback / closure. To do so, simply provide a callback as the value,
-and make sure that the response is `true` in order to make the assertion pass, or `null`/`false` etc. in order to fail
-the assertion:
+and make sure that the response is `true` in order to make the assertion pass, or anything else to fail the assertion:
 
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
