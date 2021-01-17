@@ -6,6 +6,8 @@ use ClaudioDekker\Inertia\Assert;
 use ClaudioDekker\Inertia\Tests\TestCase;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Collection;
 use Inertia\Inertia;
 use PHPUnit\Framework\AssertionFailedError;
 
@@ -300,6 +302,43 @@ class AssertTest extends TestCase
 
         $response->assertInertia(function (Assert $inertia) use ($userB) {
             $inertia->where('bar', $userB);
+        });
+    }
+
+    /** @test */
+    public function the_prop_matches_a_value_using_a_responsable(): void
+    {
+        Model::unguard();
+        $user = User::make(['name' => 'Example']);
+        $resource = JsonResource::collection(new Collection([$user, $user]));
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => $resource,
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) use ($resource) {
+            $inertia->where('bar', $resource);
+        });
+    }
+
+    /** @test */
+    public function the_prop_does_not_match_a_value_using_a_responsable(): void
+    {
+        Model::unguard();
+        $resourceA = JsonResource::make(User::make(['name' => 'Another']));
+        $resourceB = JsonResource::make(User::make(['name' => 'Example']));
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => $resourceA,
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [bar] does not match the expected Responsable.');
+
+        $response->assertInertia(function (Assert $inertia) use ($resourceB) {
+            $inertia->where('bar', $resourceB);
         });
     }
 

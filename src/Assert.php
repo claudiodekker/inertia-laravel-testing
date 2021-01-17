@@ -4,6 +4,7 @@ namespace ClaudioDekker\Inertia;
 
 use Closure;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -170,6 +171,12 @@ class Assert
                 $value->toArray(),
                 $this->prop($key),
                 sprintf('Inertia property [%s] does not match the expected Arrayable.', $this->dotPath($key))
+            );
+        } elseif ($value instanceof Responsable) {
+            PHPUnit::assertEquals(
+                $value->toResponse(request())->getData(),
+                $this->prop($key),
+                sprintf('Inertia property [%s] does not match the expected Responsable.', $this->dotPath($key))
             );
         } else {
             PHPUnit::assertEquals(
