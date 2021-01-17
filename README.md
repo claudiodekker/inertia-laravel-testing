@@ -110,11 +110,12 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 ```
 
 Apart from asserting that the component matches what you expect, this assertion will also automatically attempt to
-locate the component's file on the filesystem, and will fail when it cannot be found.
+locate the page component on the filesystem, and will fail when it cannot be found.
 
 By default, lookup occurs relative to the `resources/js/Pages` folder, and will only accept matching files that have a `.vue` or `.svelte` extension.
 All of these settings are configurable using our [configuration file](#publishing-the-configuration-file).
-**If you are missing any logical default extensions such as those for React, please let us know which ones should be supported by opening an issue!**
+
+>> **NOTE:** If you are missing any logical default extensions such as those for React, please let us know which ones should be supported by [opening an issue](https://github.com/claudiodekker/inertia-laravel-testing/issues/new)!
 
 #### Disabling or enabling a single lookup
 
