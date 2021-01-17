@@ -407,8 +407,9 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
     // Alternative
     ->missesAll('subject', 'user.name')
 );
+```
 
-## Publishing the config file
+## Publishing the configuration file
 
 To modify any settings such as the lookup paths, valid extensions etc., you may publish our configuration file into your
 application and change any of it's values. To do so, run the following Artisan command:
