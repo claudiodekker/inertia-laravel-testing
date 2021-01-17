@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use PHPUnit\Framework\Assert as PHPUnit;
@@ -181,8 +182,13 @@ class Assert
         if (is_int($value) && ! is_null($scope)) {
             $path = $this->dotPath($key);
 
+            $prop = $this->prop($key);
+            if ($prop instanceof Collection) {
+                $prop = $prop->all();
+            }
+
             PHPUnit::assertTrue($value > 0, sprintf('Cannot scope directly onto the first entry of property [%s] when asserting that it has a size of 0.', $path));
-            PHPUnit::assertIsArray($prop = $this->prop($key), sprintf('Direct scoping is currently unsupported for non-array properties such as [%s].', $path));
+            PHPUnit::assertIsArray($prop, sprintf('Direct scoping is currently unsupported for non-array like properties such as [%s].', $path));
             $this->count($key, $value);
 
             return $this->scope($key.'.'.array_keys($prop)[0], $scope);
