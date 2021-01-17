@@ -172,6 +172,18 @@ class Assert
         return $this;
     }
 
+    public function misses($key): self
+    {
+        $this->interactsWith($key);
+
+        PHPUnit::assertNotTrue(
+            Arr::has($this->prop(), $key),
+            sprintf('Inertia property [%s] exists when it was not expected to.', $this->dotPath($key))
+        );
+
+        return $this;
+    }
+
     public function whereAll(array $bindings): self
     {
         foreach ($bindings as $key => $value) {

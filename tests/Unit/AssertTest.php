@@ -278,6 +278,44 @@ class AssertTest extends TestCase
     }
 
     /** @test */
+    public function it_asserts_that_a_prop_is_missing(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'foo' => [
+                    'bar' => true,
+                ]
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->misses('foo.baz');
+        });
+    }
+
+    /** @test */
+    public function it_fails_asserting_that_a_prop_is_missing_when_it_exists(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'prop' => 'value',
+                'foo' => [
+                    'bar' => true,
+                ]
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [foo.bar] exists when it was not expected to.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia
+                ->has('prop')
+                ->misses('foo.bar');
+        });
+    }
+
+    /** @test */
     public function the_prop_matches_a_value(): void
     {
         $response = $this->makeMockRequest(
