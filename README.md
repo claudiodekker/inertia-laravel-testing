@@ -306,13 +306,13 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 ```
 
 > **NOTE**: While `etc` reads fluently at the end of a query scope, placing it at the very beginning or somewhere in the
-> middle of your assertions does not change how it behaves: It will disable the check of asserting that all properties
-> in that scope have been interacted with _entirely._
+> middle of your assertions does not change how it behaves: It will disable the automatic check that asserts that all properties
+> in the current scope have been interacted with.
 
 ### `misses`
 
 While `misses` isn't necessary by default (as this library automatically checks that you've asserted/interacted with
-each property and will fail an assertion if you haven't), it is very valuable in combination when using `etc.`
+each property and will if you haven't), it provides a great solution when using `etc.`
 
 In short, it does exactly the opposite as the (basic usage of the) `has` method: It ensures that the prop does 
 _not exist_.
