@@ -105,7 +105,7 @@ class AssertTest extends TestCase
     }
 
     /** @test */
-    public function it_can_enforce_the_component_file_existence_check_when_the_setting_is_globally_disabled(): void
+    public function it_can_force_enable_the_component_file_existence(): void
     {
         $response = $this->makeMockRequest(
             Inertia::render('foo')
@@ -117,6 +117,20 @@ class AssertTest extends TestCase
 
         $response->assertInertia(function (Assert $inertia) {
             $inertia->component('foo', true);
+        });
+    }
+
+    /** @test */
+    public function it_can_force_disable_the_component_file_existence_check(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo')
+        );
+
+        config()->set('inertia.page.should_exist', true);
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->component('foo', false);
         });
     }
 

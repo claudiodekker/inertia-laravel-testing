@@ -126,11 +126,11 @@ class Assert
         return $this;
     }
 
-    public function component(string $value = null, $shouldExist = false): self
+    public function component(string $value = null, $shouldExist = null): self
     {
         PHPUnit::assertSame($value, $this->component, 'Unexpected Inertia page component.');
 
-        if ($shouldExist || config('inertia.page.should_exist', true)) {
+        if ($shouldExist || (is_null($shouldExist) && config('inertia.page.should_exist', true))) {
             try {
                 app('inertia.view.finder')->find($value);
             } catch (InvalidArgumentException $exception) {
