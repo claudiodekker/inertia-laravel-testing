@@ -31,9 +31,17 @@ composer require --dev claudiodekker/inertia-laravel-testing
 
 ## Usage
 
-To start testing your Inertia views, simply chain the `assertInertia()` method onto your `TestResponse` response.
-You may then (optionally) pass a callback to this method, allowing you to chain more granular Inertia assertions:
+To start testing your Inertia pages, you first chain the `assertInertia()` method onto your `TestResponse` responses:
 
+```php
+$response = $this->as('jonathan')->get('/podcasts/' . $podcast->id);
+
+$response->assertInertia();
+```
+
+By default, this will only assert that the request came back with a valid Inertia page response.
+
+In order to assert more things, such as that a certain prop matches an expected value, you may provide a callback/closure, on which you can then chain any of the [available assertions](#available-assertions):
 
 ```php
 use ClaudioDekker\Inertia\Assert;
@@ -80,10 +88,25 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 
 ## Available Assertions
 
-The API introduced in V2 is very simple, and consists of a handful of assertions, most fundamental of which is the basic assertion that ensures that the requested page is actually an Inertia page:
-```php
-$response->assertInertia();
-```
+Basics:
+- [Component](#component)
+- [(Page) URL](#page-url)
+- [(Asset) Version](#asset-version)
+
+In-depth:
+- [`has`](#has)
+    - [Count / Size / Length](count--size--length)
+    - [Scoping](#scoping)
+- [`where`](#where)
+    - [Using a Closure](#using-a-closure)
+- [`etc`](#etc)
+    - [`misses`](#misses)
+
+Reducing verbosity:
+- [`has`](#has-1)
+- [`where`](#where-1)
+- [`misses`](#misses-1)
+
 
 ### Component
 
@@ -126,7 +149,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 
 ### (Asset) Version
 
-To assert that the Asset version matches what you expect, you may use the `version` assertion:
+To assert that the asset version matches what you expect, you may use the `version` assertion:
 
 ```php
 $expected = md5(mix('/js/app.js'));
@@ -259,7 +282,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 );
 ```
 
-### Closure
+### Using a Closure
 
 Finally, it's also possible to assert against a callback / closure. To do so, simply provide a callback as the value,
 and make sure that the response is `true` in order to make the assertion pass, or `null`/`false` etc. in order to fail
