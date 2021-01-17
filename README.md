@@ -46,12 +46,6 @@ When using this library to it's fullest extent, your tests will look similar to 
 ```php
 use ClaudioDekker\Inertia\Assert;
 
-// ...
-
-$podcast = Podcast::factory()->create([/* ... */]);
-
-// ...
-
 $response->assertInertia(fn (Assert $inertia) => $inertia
     ->component('Podcasts/Show')
     ->has('podcast', fn (Assert $inertia) => $inertia
