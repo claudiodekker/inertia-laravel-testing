@@ -4,6 +4,8 @@ namespace ClaudioDekker\Inertia\Tests\Unit;
 
 use ClaudioDekker\Inertia\Assert;
 use ClaudioDekker\Inertia\Tests\TestCase;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User;
 use Inertia\Inertia;
 use PHPUnit\Framework\AssertionFailedError;
 
@@ -262,6 +264,42 @@ class AssertTest extends TestCase
             $inertia->where('bar', function ($value) {
                 return $value === 'invalid';
             });
+        });
+    }
+
+    /** @test */
+    public function the_prop_matches_a_value_using_an_arrayable(): void
+    {
+        Model::unguard();
+        $user = User::make(['name' => 'Example']);
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => $user,
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) use ($user) {
+            $inertia->where('bar', $user);
+        });
+    }
+
+    /** @test */
+    public function the_prop_does_not_match_a_value_using_an_arrayable(): void
+    {
+        Model::unguard();
+        $userA = User::make(['name' => 'Example']);
+        $userB = User::make(['name' => 'Another']);
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => $userA,
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [bar] does not match the expected Arrayable.');
+
+        $response->assertInertia(function (Assert $inertia) use ($userB) {
+            $inertia->where('bar', $userB);
         });
     }
 

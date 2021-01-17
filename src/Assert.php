@@ -3,6 +3,7 @@
 namespace ClaudioDekker\Inertia;
 
 use Closure;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -163,6 +164,12 @@ class Assert
             PHPUnit::assertTrue(
                 $value($this->prop($key)),
                 sprintf('Inertia property [%s] was marked as invalid using a closure.', $this->dotPath($key))
+            );
+        } elseif ($value instanceof Arrayable) {
+            PHPUnit::assertEquals(
+                $value->toArray(),
+                $this->prop($key),
+                sprintf('Inertia property [%s] does not match the expected Arrayable.', $this->dotPath($key))
             );
         } else {
             PHPUnit::assertEquals(
