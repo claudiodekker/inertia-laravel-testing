@@ -32,7 +32,7 @@ composer require --dev claudiodekker/inertia-laravel-testing
 ## Usage
 
 To start testing your Inertia views, simply chain the `assertInertia()` method onto your `TestResponse` response.
-You may then (optionally) pass a callback to this method, allowing you to chain more granual Inertia assertions:
+You may then (optionally) pass a callback to this method, allowing you to chain more granular Inertia assertions:
 
 
 ```php
@@ -80,15 +80,14 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 
 ## Available Assertions
 
-The API introduced in V2 is very simple, and only consists of a few (fairly intuitive) methods, all of which are based on
-a basic check, that allows you to assert that the given page is an Inertia page:
+The API introduced in V2 is very simple, and consists of a handful of assertions, most fundamental of which is the basic assertion that ensures that the requested page is actually an Inertia page:
 ```php
 $response->assertInertia();
 ```
 
 ### Component
 
-To assert that the given page is not just an Inertia page, but also has the page component you expect,
+To assert that the requested page is not just an Inertia page, but also has the page component you expect,
 we'll have to do a bit more:
 
 ```php
