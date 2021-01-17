@@ -115,7 +115,7 @@ locate the page component on the filesystem, and will fail when it cannot be fou
 By default, lookup occurs relative to the `resources/js/Pages` folder, and will only accept matching files that have a `.vue` or `.svelte` extension.
 All of these settings are configurable using our [configuration file](#publishing-the-configuration-file).
 
->> **NOTE:** If you are missing any logical default extensions such as those for React, please let us know which ones should be supported by [opening an issue](https://github.com/claudiodekker/inertia-laravel-testing/issues/new)!
+> **NOTE:** If you are missing any logical default extensions such as those for React, please let us know which ones should be supported by [opening an issue](https://github.com/claudiodekker/inertia-laravel-testing/issues/new)!
 
 #### Disabling or enabling a single lookup
 
@@ -151,12 +151,11 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 );
 ```
 
-> **NOTE**: We recommend to only use this assertion when you are using [asset versioning](https://inertiajs.com/asset-versioning), 
-> which is disabled by default on a fresh Inertia installation.
+> **NOTE**: We recommend to only use this assertion when you are using [asset versioning](https://inertiajs.com/asset-versioning).
 
 ### `has`
 #### Basic Usage
-To *assert that Inertia **has** a property*, you may use the `has` method:
+To assert that Inertia **has** a property, you may use the `has` method:
 
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
@@ -169,9 +168,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 ```
 
 #### Count / Size / Length
-To *assert that Inertia **has** a property of a specific size*, we'll still use the `has` method, but will in addition
-to the key pass in a second (integer) argument that reflects the expected size:
-
+To assert that Inertia **has** a property of a specific size/length, you may provide the expected size as the second argument:
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
     // Checking that the root-level podcasts property exists and has 7 items
