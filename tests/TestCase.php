@@ -52,10 +52,10 @@ class TestCase extends Orchestra
 
     protected function makeMockRequest($view)
     {
-        app('router')->get('/', function () use ($view) {
+        app('router')->get('/example-url', function () use ($view) {
             return $view;
         });
 
-        return $this->get('/');
+        return $this->get('/example-url');
     }
 }

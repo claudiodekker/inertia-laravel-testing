@@ -76,6 +76,33 @@ class AssertTest extends TestCase
     }
 
     /** @test */
+    public function the_page_url_matches(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo')
+        );
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->url('/example-url');
+        });
+    }
+
+    /** @test */
+    public function the_page_url_does_not_match(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo')
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Unexpected Inertia page url.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->url('/invalid-page');
+        });
+    }
+
+    /** @test */
     public function the_component_exists_on_the_filesystem(): void
     {
         $response = $this->makeMockRequest(

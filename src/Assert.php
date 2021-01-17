@@ -20,16 +20,21 @@ class Assert
     private $props;
 
     /** @var string */
+    private $url;
+
+    /** @var string */
     private $path;
 
     /** @var array */
     protected $interacted = [];
 
-    protected function __construct(string $component, array $props, string $path = null)
+    protected function __construct(string $component, array $props, string $url, string $path = null)
     {
         $this->path = $path;
+
         $this->component = $component;
         $this->props = $props;
+        $this->url = $url;
     }
 
     protected function interactsWith(string $key): void
@@ -68,14 +73,15 @@ class Assert
 
     protected function scope($key): self
     {
-        $prop = $this->prop($key);
+        $props = $this->prop($key);
         $path = $this->dotPath($key);
 
-        PHPUnit::assertIsArray($prop, sprintf('Inertia property [%s] is not scopeable.', $path));
+        PHPUnit::assertIsArray($props, sprintf('Inertia property [%s] is not scopeable.', $path));
 
         return new self(
             $this->component,
-            $prop,
+            $props,
+            $this->url,
             $path
         );
     }
@@ -95,7 +101,7 @@ class Assert
             PHPUnit::fail('Not a valid Inertia response.');
         }
 
-        return new self($page['component'], $page['props']);
+        return new self($page['component'], $page['props'], $page['url']);
     }
 
     public function interacted(): void
@@ -116,17 +122,24 @@ class Assert
         return $this;
     }
 
-    public function component(string $component = null, $shouldExist = false): self
+    public function component(string $value = null, $shouldExist = false): self
     {
-        PHPUnit::assertSame($component, $this->component, 'Unexpected Inertia page component.');
+        PHPUnit::assertSame($value, $this->component, 'Unexpected Inertia page component.');
 
         if ($shouldExist || config('inertia-testing.page.should_exist', true)) {
             try {
-                app('inertia-testing.view.finder')->find($component);
+                app('inertia-testing.view.finder')->find($value);
             } catch (InvalidArgumentException $exception) {
-                PHPUnit::fail(sprintf('Inertia page component file [%s] does not exist.', $component));
+                PHPUnit::fail(sprintf('Inertia page component file [%s] does not exist.', $value));
             }
         }
+
+        return $this;
+    }
+
+    public function url(string $value): self
+    {
+        PHPUnit::assertSame($value, $this->url, 'Unexpected Inertia page url.');
 
         return $this;
     }
