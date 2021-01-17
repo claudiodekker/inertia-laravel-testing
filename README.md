@@ -300,7 +300,6 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
         ->has('subject')
         ->has('comments')
         ->etc()
-
     )
 );
 ```
