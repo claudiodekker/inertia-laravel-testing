@@ -34,14 +34,14 @@ composer require --dev claudiodekker/inertia-laravel-testing
 To start testing your Inertia pages, you first chain the `assertInertia()` method onto your `TestResponse` responses:
 
 ```php
-$response = $this->as('jonathan')->get('/podcasts/' . $podcast->id);
+// ...
 
 $response->assertInertia();
 ```
 
 By default, this will only assert that the request came back with a valid Inertia page response.
 
-In order to assert more things, such as that a certain prop matches an expected value, you may provide a callback/closure, on which you can then chain any of the [available assertions](#available-assertions):
+In order to assert more things, such as that a certain prop matches an expected value, you may provide a callback/closure, on which you can then chain any of the [available assertions](#available-assertions). For example:
 
 ```php
 use ClaudioDekker\Inertia\Assert;
@@ -86,6 +86,8 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 > });
 > ```
 
+> **NOTE**: While type-hinting the `Assert` isn't necessary (and will definitely cause _some_ minor breakage once migrating from this package), it does allow your IDE to suggest which methods can be chained.
+
 ## Available Assertions
 
 Basics:
@@ -107,11 +109,11 @@ Reducing verbosity:
 - [`where`](#where-1)
 - [`misses`](#misses-1)
 
+---
 
 ### Component
 
-To assert that the requested page is not just an Inertia page, but also has the page component you expect,
-we'll have to do a bit more:
+To assert that the Inertia page has the component you expect, you can use the `component` assertion:
 
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
@@ -119,23 +121,23 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 );
 ```
 
-Apart from asserting that the component matches what we'd expect, this assertion also automatically tries to locate
-it on the filesystem, and fails the assertion if it cannot find it. 
+Apart from asserting that the component matches what you expect, this assertion will also automatically attempt to
+locate the page component on the filesystem, and fails the assertion when it cannot be located.
 
-**By default** it will try to look for your page components relative to the `resources/js/Pages` folder, and will 
-only accept files have the extensions `.vue` or `.svelte` extension.
+As of default, the assertion will try to find the page component file relative to the `resources/js/Pages` folder,
+and will only accept matching files that have a `.vue` or `.svelte` extensions. 
 
-To disable this check on a per-component assertion basis, you may pass `false` as the assertion's second argument.
-This will still assert that the component name in the Inertia response matches, but will not check for the file's 
-existence:
+**If you are missing any logical default extensions such as those for React, please let us know which ones should be supported by opening an issue!**
+
+To disable this filesystem lookup on a per-assertion basis, you may pass `false` as the second argument:
+
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
     ->component('Podcasts/Show', false)
 );
 ```
 
-Alternatively, you may pass in `true` as the second argument to enforce this check for that instance, but this really is
-not not necessary to do unless you [disable the automatic component filesystem lookup in the configuration file](#publishing-the-configuration-file).
+Alternatively, if you've disabled the [automatic component filesystem lookup in the configuration file](#publishing-the-configuration-file), you can enable the lookup on a per-assertion basis by passing `true` as the second argument instead.
 
 ### (Page) URL
 
@@ -149,7 +151,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 
 ### (Asset) Version
 
-To assert that the asset version matches what you expect, you may use the `version` assertion:
+To assert that the (asset) version matches what you expect, you may use the `version` assertion:
 
 ```php
 $expected = md5(mix('/js/app.js'));
@@ -160,7 +162,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 ```
 
 > **NOTE**: We recommend to only use this assertion when you're using [asset versioning](https://inertiajs.com/asset-versioning), 
-> which is disabled by default on a new Inertia installation.
+> which is disabled by default on a fresh Inertia installation.
 
 ### `has`
 #### Basic Usage
