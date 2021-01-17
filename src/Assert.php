@@ -22,19 +22,23 @@ class Assert
     /** @var string */
     private $url;
 
+    /** @var mixed|null */
+    private $version;
+
     /** @var string */
     private $path;
 
     /** @var array */
     protected $interacted = [];
 
-    protected function __construct(string $component, array $props, string $url, string $path = null)
+    protected function __construct(string $component, array $props, string $url, $version = null, string $path = null)
     {
         $this->path = $path;
 
         $this->component = $component;
         $this->props = $props;
         $this->url = $url;
+        $this->version = $version;
     }
 
     protected function interactsWith(string $key): void
@@ -82,6 +86,7 @@ class Assert
             $this->component,
             $props,
             $this->url,
+            $this->version,
             $path
         );
     }
@@ -101,7 +106,7 @@ class Assert
             PHPUnit::fail('Not a valid Inertia response.');
         }
 
-        return new self($page['component'], $page['props'], $page['url']);
+        return new self($page['component'], $page['props'], $page['url'], $page['version']);
     }
 
     public function interacted(): void
@@ -140,6 +145,13 @@ class Assert
     public function url(string $value): self
     {
         PHPUnit::assertSame($value, $this->url, 'Unexpected Inertia page url.');
+
+        return $this;
+    }
+
+    public function version($value): self
+    {
+        PHPUnit::assertSame($value, $this->version, 'Unexpected Inertia asset version.');
 
         return $this;
     }

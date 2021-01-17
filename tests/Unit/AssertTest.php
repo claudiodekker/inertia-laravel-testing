@@ -76,33 +76,6 @@ class AssertTest extends TestCase
     }
 
     /** @test */
-    public function the_page_url_matches(): void
-    {
-        $response = $this->makeMockRequest(
-            Inertia::render('foo')
-        );
-
-        $response->assertInertia(function (Assert $inertia) {
-            $inertia->url('/example-url');
-        });
-    }
-
-    /** @test */
-    public function the_page_url_does_not_match(): void
-    {
-        $response = $this->makeMockRequest(
-            Inertia::render('foo')
-        );
-
-        $this->expectException(AssertionFailedError::class);
-        $this->expectExceptionMessage('Unexpected Inertia page url.');
-
-        $response->assertInertia(function (Assert $inertia) {
-            $inertia->url('/invalid-page');
-        });
-    }
-
-    /** @test */
     public function the_component_exists_on_the_filesystem(): void
     {
         $response = $this->makeMockRequest(
@@ -927,6 +900,64 @@ class AssertTest extends TestCase
                 'bar' => 2,
                 'baz' => 1,
             ]);
+        });
+    }
+
+    /** @test */
+    public function the_page_url_matches(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo')
+        );
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->url('/example-url');
+        });
+    }
+
+    /** @test */
+    public function the_page_url_does_not_match(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo')
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Unexpected Inertia page url.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->url('/invalid-page');
+        });
+    }
+
+    /** @test */
+    public function the_asset_version_matches(): void
+    {
+        Inertia::version('example-version');
+
+        $response = $this->makeMockRequest(
+            Inertia::render('foo')
+        );
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->version('example-version');
+        });
+    }
+
+    /** @test */
+    public function the_asset_version_does_not_match(): void
+    {
+        Inertia::version('example-version');
+
+        $response = $this->makeMockRequest(
+            Inertia::render('foo')
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Unexpected Inertia asset version.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->version('different-version');
         });
     }
 }
