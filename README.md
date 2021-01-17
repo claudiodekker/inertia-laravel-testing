@@ -34,15 +34,10 @@ composer require --dev claudiodekker/inertia-laravel-testing
 To start testing your Inertia pages, simply chain the `assertInertia` method onto your `TestResponse` responses, and chain any of the [available assertions](#available-assertions) on it's closure/callback argument:
 
 ```php
-// ...
-
-$response->assertInertia(fn ($inertia) => $inertia
-    ->someAssertionHere()
-    ->anotherAssertionHere()
-);
+$response->assertInertia(fn ($inertia) => $inertia->someInertiaAssertion());
 ```
 
-When using this library to it's fullest extent, your tests will look similar to this:
+When using this library to it's fullest extent, your tests will end up looking similar to this:
 ```php
 use ClaudioDekker\Inertia\Assert;
 
@@ -106,7 +101,7 @@ Reducing verbosity:
 
 ### Component
 
-To assert that the Inertia page has the component you expect, you can use the `component` assertion:
+To assert that the Inertia page has the page component you expect, you can use the `component` assertion:
 
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
@@ -115,11 +110,10 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 ```
 
 Apart from asserting that the component matches what you expect, this assertion will also automatically attempt to
-locate the page component on the filesystem, and fails the assertion when it cannot be located.
+locate the component's file on the filesystem, and will fail when it cannot be found.
 
-As of default, the assertion will try to find the page component file relative to the `resources/js/Pages` folder,
-and will only accept matching files that have a `.vue` or `.svelte` extensions. 
-
+By default, lookup occurs relative to the `resources/js/Pages` folder, and will only accept matching files that have a `.vue` or `.svelte` extensions.
+All of these settings are configurable using our [configuration file](#publishing-the-configuration-file).
 **If you are missing any logical default extensions such as those for React, please let us know which ones should be supported by opening an issue!**
 
 To disable this filesystem lookup on a per-assertion basis, you may pass `false` as the second argument:
