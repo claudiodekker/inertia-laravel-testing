@@ -116,7 +116,7 @@ By default, lookup occurs relative to the `resources/js/Pages` folder, and will 
 All of these settings are configurable using our [configuration file](#publishing-the-configuration-file).
 **If you are missing any logical default extensions such as those for React, please let us know which ones should be supported by opening an issue!**
 
-### Disabling or enabling a single lookup
+#### Disabling or enabling a single lookup
 
 To disable this filesystem lookup on a per-assertion basis, you may pass `false` as the second argument:
 
