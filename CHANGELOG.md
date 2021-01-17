@@ -2,7 +2,8 @@
 
 All notable changes to `claudiodekker/inertia-laravel-testing` will be documented in this file
 
-## 2.0.0 - 2021-01-15
+## 2.0.0 - 2021-01-18
+- Re-worked the entire library using a brand-new, fluent syntax.
 - `$response->assertInertia('component')` now also asserts that the component exists on the filesystem ([#17](https://github.com/inertiajs/inertia-laravel/pull/124))
 
 ## 1.1.0 - 2020-09-10
