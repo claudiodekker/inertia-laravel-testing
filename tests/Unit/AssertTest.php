@@ -36,7 +36,7 @@ class AssertTest extends TestCase
     }
 
     /** @test */
-    public function it_preserves_the_ability_to_continue_chaining_test_response_calls(): void
+    public function it_preserves_the_ability_to_continue_chaining_laravel_test_response_calls(): void
     {
         $response = $this->makeMockRequest(
             Inertia::render('foo')
@@ -221,6 +221,63 @@ class AssertTest extends TestCase
     }
 
     /** @test */
+    public function it_can_count_the_amount_of_items_in_a_given_prop(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => [
+                    'baz' => 'example',
+                    'prop' => 'value',
+                ],
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->has('bar', 2);
+        });
+    }
+
+    /** @test */
+    public function it_fails_counting_when_the_amount_of_items_in_a_given_prop_does_not_match(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => [
+                    'baz' => 'example',
+                    'prop' => 'value',
+                ],
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [bar] does not have the expected size.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->has('bar', 1);
+        });
+    }
+
+    /** @test */
+    public function it_cannot_count_the_amount_of_items_in_a_given_prop_when_the_prop_does_not_exist(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => [
+                    'baz' => 'example',
+                    'prop' => 'value',
+                ],
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [baz] does not exist.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->has('baz', 2);
+        });
+    }
+
+    /** @test */
     public function the_prop_matches_a_value(): void
     {
         $response = $this->makeMockRequest(
@@ -248,6 +305,23 @@ class AssertTest extends TestCase
 
         $response->assertInertia(function (Assert $inertia) {
             $inertia->where('bar', 'invalid');
+        });
+    }
+
+    /** @test */
+    public function the_prop_does_not_match_a_value_when_it_does_not_exist(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => 'value',
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [baz] does not exist.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->where('baz', null);
         });
     }
 
@@ -395,127 +469,6 @@ class AssertTest extends TestCase
     }
 
     /** @test */
-    public function the_prop_does_not_match_a_value_when_it_does_not_exist(): void
-    {
-        $response = $this->makeMockRequest(
-            Inertia::render('foo', [
-                'bar' => 'value',
-            ])
-        );
-
-        $this->expectException(AssertionFailedError::class);
-        $this->expectExceptionMessage('Inertia property [baz] does not exist.');
-
-        $response->assertInertia(function (Assert $inertia) {
-            $inertia->where('baz', null);
-        });
-    }
-
-    /** @test */
-    public function it_can_assert_that_multiple_props_match_their_expected_values_at_once(): void
-    {
-        Model::unguard();
-        $user = User::make(['name' => 'Example']);
-        $resource = JsonResource::make(User::make(['name' => 'Another']));
-
-        $response = $this->makeMockRequest(
-            Inertia::render('foo', [
-                'foo' => [
-                    'user' => $user,
-                    'resource' => $resource,
-                ],
-                'bar' => 'baz',
-            ])
-        );
-
-        $response->assertInertia(function (Assert $inertia) use ($user, $resource) {
-            $inertia->whereAll([
-                'foo.user' => $user,
-                'foo.resource' => $resource,
-                'bar' => function ($value) {
-                    return $value === 'baz';
-                },
-            ]);
-        });
-    }
-
-    /** @test */
-    public function it_can_assert_that_multiple_props_match_their_expected_values_at_once_when_at_least_one_does_not(): void
-    {
-        $response = $this->makeMockRequest(
-            Inertia::render('foo', [
-                'foo' => 'bar',
-                'baz' => 'example',
-            ])
-        );
-
-        $this->expectException(AssertionFailedError::class);
-        $this->expectExceptionMessage('Inertia property [baz] was marked as invalid using a closure.');
-
-        $response->assertInertia(function (Assert $inertia) {
-            $inertia->whereAll([
-                'foo' => 'bar',
-                'baz' => function ($value) {
-                    return $value === 'foo';
-                },
-            ]);
-        });
-    }
-
-    /** @test */
-    public function it_can_assert_that_it_has_multiple_props(): void
-    {
-        Model::unguard();
-        $user = User::make(['name' => 'Example']);
-        $resource = JsonResource::make(User::make(['name' => 'Another']));
-
-        $response = $this->makeMockRequest(
-            Inertia::render('foo', [
-                'foo' => [
-                    'user' => $user,
-                    'resource' => $resource,
-                ],
-                'bar' => 'baz',
-            ])
-        );
-
-        $response->assertInertia(function (Assert $inertia) {
-            $inertia->whereAll([
-                'foo.user',
-                'foo.resource',
-                'bar',
-            ]);
-        });
-    }
-
-    /** @test */
-    public function it_can_assert_that_it_does_not_have_multiple_props_when_one_of_the_props_is_missing(): void
-    {
-        Model::unguard();
-        $user = User::make(['name' => 'Example']);
-        $resource = JsonResource::make(User::make(['name' => 'Another']));
-
-        $response = $this->makeMockRequest(
-            Inertia::render('foo', [
-                'foo' => [
-                    'user' => $user,
-                    'resource' => $resource,
-                ],
-                'bar' => 'baz',
-            ])
-        );
-
-        $this->expectException(AssertionFailedError::class);
-        $this->expectExceptionMessage('Unexpected Inertia properties were found on the root level.');
-
-        $response->assertInertia(function (Assert $inertia) {
-            $inertia->whereAll([
-                'foo.user',
-            ]);
-        });
-    }
-
-    /** @test */
     public function it_can_scope_the_assertion_query(): void
     {
         $response = $this->makeMockRequest(
@@ -578,43 +531,6 @@ class AssertTest extends TestCase
             $inertia->has('bar', function (Assert $inertia) {
                 //
             });
-        });
-    }
-
-    /** @test */
-    public function it_can_count_the_amount_of_items_in_a_given_prop(): void
-    {
-        $response = $this->makeMockRequest(
-            Inertia::render('foo', [
-                'bar' => [
-                    'baz' => 'example',
-                    'prop' => 'value',
-                ],
-            ])
-        );
-
-        $response->assertInertia(function (Assert $inertia) {
-            $inertia->has('bar', 2);
-        });
-    }
-
-    /** @test */
-    public function it_fails_when_the_amount_of_items_in_a_given_prop_does_not_match(): void
-    {
-        $response = $this->makeMockRequest(
-            Inertia::render('foo', [
-                'bar' => [
-                    'baz' => 'example',
-                    'prop' => 'value',
-                ],
-            ])
-        );
-
-        $this->expectException(AssertionFailedError::class);
-        $this->expectExceptionMessage('Inertia property [bar] does not have the expected size.');
-
-        $response->assertInertia(function (Assert $inertia) {
-            $inertia->has('bar', 1);
         });
     }
 
@@ -694,6 +610,156 @@ class AssertTest extends TestCase
                 ->has('baz', function (Assert $inertia) {
                     $inertia->where('foo', 'bar');
                 });
+        });
+    }
+
+    /** @test */
+    public function it_can_assert_that_multiple_props_match_their_expected_values_at_once(): void
+    {
+        Model::unguard();
+        $user = User::make(['name' => 'Example']);
+        $resource = JsonResource::make(User::make(['name' => 'Another']));
+
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'foo' => [
+                    'user' => $user,
+                    'resource' => $resource,
+                ],
+                'bar' => 'baz',
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) use ($user, $resource) {
+            $inertia->whereAll([
+                'foo.user' => $user,
+                'foo.resource' => $resource,
+                'bar' => function ($value) {
+                    return $value === 'baz';
+                },
+            ]);
+        });
+    }
+
+    /** @test */
+    public function it_cannot_assert_that_multiple_props_match_their_expected_values_when_at_least_one_does_not(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'foo' => 'bar',
+                'baz' => 'example',
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [baz] was marked as invalid using a closure.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->whereAll([
+                'foo' => 'bar',
+                'baz' => function ($value) {
+                    return $value === 'foo';
+                },
+            ]);
+        });
+    }
+
+    /** @test */
+    public function it_can_assert_that_it_has_multiple_props(): void
+    {
+        Model::unguard();
+        $user = User::make(['name' => 'Example']);
+        $resource = JsonResource::make(User::make(['name' => 'Another']));
+
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'foo' => [
+                    'user' => $user,
+                    'resource' => $resource,
+                ],
+                'bar' => 'baz',
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->hasAll([
+                'foo.user',
+                'foo.resource',
+                'bar',
+            ]);
+        });
+    }
+
+    /** @test */
+    public function it_cannot_assert_that_it_has_multiple_props_when_at_least_one_is_missing(): void
+    {
+        Model::unguard();
+        $user = User::make(['name' => 'Example']);
+        $resource = JsonResource::make(User::make(['name' => 'Another']));
+
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'foo' => [
+                    'user' => $user,
+                    'resource' => $resource,
+                ],
+                'bar' => 'baz',
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Unexpected Inertia properties were found on the root level.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->hasAll([
+                'foo.user',
+            ]);
+        });
+    }
+
+    /** @test */
+    public function it_can_count_multiple_props_at_once(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => [
+                    'key' => 'value',
+                    'prop' => 'example',
+                ],
+                'baz' => [
+                    'another' => 'value',
+                ],
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->hasAll([
+                'bar' => 2,
+                'baz' => 1,
+            ]);
+        });
+    }
+
+    /** @test */
+    public function it_cannot_count_multiple_props_at_once_when_at_least_one_is_missing(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => [
+                    'key' => 'value',
+                    'prop' => 'example',
+                ],
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [baz] does not exist.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->hasAll([
+                'bar' => 2,
+                'baz' => 1,
+            ]);
         });
     }
 }

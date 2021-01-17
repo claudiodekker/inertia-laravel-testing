@@ -73,10 +73,8 @@ class Assert
         return Arr::get($this->props, $key);
     }
 
-    protected function count($key, $length): self
+    protected function count(string $key, $length): self
     {
-        $this->has($key);
-
         PHPUnit::assertCount(
             $length,
             $this->prop($key),
@@ -133,8 +131,25 @@ class Assert
         return $this;
     }
 
-    public function has(string $key, $value = null): self
+    public function hasAll(array $bindings): self
     {
+        foreach ($bindings as $key => $value) {
+            if (is_int($key)) {
+                $this->has($value);
+            } else {
+                $this->has($key, $value);
+            }
+        }
+
+        return $this;
+    }
+
+    public function has($key, $value = null): self
+    {
+        if (! is_string($key)) {
+            return $this->hasAll($key);
+        }
+
         PHPUnit::assertTrue(
             Arr::has($this->prop(), $key),
             sprintf('Inertia property [%s] does not exist.', $this->dotPath($key))
@@ -160,11 +175,7 @@ class Assert
     public function whereAll(array $bindings): self
     {
         foreach ($bindings as $key => $value) {
-            if (is_int($key)) {
-                $this->has($value);
-            } else {
-                $this->where($key, $value);
-            }
+            $this->where($key, $value);
         }
 
         return $this;
