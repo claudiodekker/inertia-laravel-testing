@@ -235,6 +235,23 @@ class AssertTest extends TestCase
     }
 
     /** @test */
+    public function the_prop_does_not_match_a_value(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => 'value',
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [bar] does not match the expected value.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->where('bar', 'invalid');
+        });
+    }
+
+    /** @test */
     public function the_prop_matches_a_value_using_a_closure(): void
     {
         $response = $this->makeMockRequest(
@@ -343,23 +360,6 @@ class AssertTest extends TestCase
     }
 
     /** @test */
-    public function the_prop_does_not_match_a_value(): void
-    {
-        $response = $this->makeMockRequest(
-            Inertia::render('foo', [
-                'bar' => 'value',
-            ])
-        );
-
-        $this->expectException(AssertionFailedError::class);
-        $this->expectExceptionMessage('Inertia property [bar] does not match the expected value.');
-
-        $response->assertInertia(function (Assert $inertia) {
-            $inertia->where('bar', 'invalid');
-        });
-    }
-
-    /** @test */
     public function the_nested_prop_matches_a_value(): void
     {
         $response = $this->makeMockRequest(
@@ -408,6 +408,110 @@ class AssertTest extends TestCase
 
         $response->assertInertia(function (Assert $inertia) {
             $inertia->where('baz', null);
+        });
+    }
+
+    /** @test */
+    public function it_can_assert_that_multiple_props_match_their_expected_values_at_once(): void
+    {
+        Model::unguard();
+        $user = User::make(['name' => 'Example']);
+        $resource = JsonResource::make(User::make(['name' => 'Another']));
+
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'foo' => [
+                    'user' => $user,
+                    'resource' => $resource,
+                ],
+                'bar' => 'baz',
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) use ($user, $resource) {
+            $inertia->whereAll([
+                'foo.user' => $user,
+                'foo.resource' => $resource,
+                'bar' => function ($value) {
+                    return $value === 'baz';
+                },
+            ]);
+        });
+    }
+
+    /** @test */
+    public function it_can_assert_that_multiple_props_match_their_expected_values_at_once_when_at_least_one_does_not(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'foo' => 'bar',
+                'baz' => 'example',
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [baz] was marked as invalid using a closure.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->whereAll([
+                'foo' => 'bar',
+                'baz' => function ($value) {
+                    return $value === 'foo';
+                },
+            ]);
+        });
+    }
+
+    /** @test */
+    public function it_can_assert_that_it_has_multiple_props(): void
+    {
+        Model::unguard();
+        $user = User::make(['name' => 'Example']);
+        $resource = JsonResource::make(User::make(['name' => 'Another']));
+
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'foo' => [
+                    'user' => $user,
+                    'resource' => $resource,
+                ],
+                'bar' => 'baz',
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->whereAll([
+                'foo.user',
+                'foo.resource',
+                'bar',
+            ]);
+        });
+    }
+
+    /** @test */
+    public function it_can_assert_that_it_does_not_have_multiple_props_when_one_of_the_props_is_missing(): void
+    {
+        Model::unguard();
+        $user = User::make(['name' => 'Example']);
+        $resource = JsonResource::make(User::make(['name' => 'Another']));
+
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'foo' => [
+                    'user' => $user,
+                    'resource' => $resource,
+                ],
+                'bar' => 'baz',
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Unexpected Inertia properties were found on the root level.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->whereAll([
+                'foo.user',
+            ]);
         });
     }
 

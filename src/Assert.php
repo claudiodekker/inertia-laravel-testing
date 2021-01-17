@@ -157,6 +157,19 @@ class Assert
         return $this;
     }
 
+    public function whereAll(array $bindings): self
+    {
+        foreach ($bindings as $key => $value) {
+            if (is_int($key)) {
+                $this->has($value);
+            } else {
+                $this->where($key, $value);
+            }
+        }
+
+        return $this;
+    }
+
     public function where($key, $value): self
     {
         $this->has($key);
