@@ -231,6 +231,41 @@ class AssertTest extends TestCase
     }
 
     /** @test */
+    public function the_prop_matches_a_value_using_a_closure(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => 'baz',
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->where('bar', function ($value) {
+                return $value === 'baz';
+            });
+        });
+    }
+
+    /** @test */
+    public function the_prop_does_not_match_a_value_using_a_closure(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => 'baz',
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [bar] was marked as invalid using a closure.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->where('bar', function ($value) {
+                return $value === 'invalid';
+            });
+        });
+    }
+
+    /** @test */
     public function the_prop_does_not_match_a_value(): void
     {
         $response = $this->makeMockRequest(

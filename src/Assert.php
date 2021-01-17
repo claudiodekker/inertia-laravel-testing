@@ -2,6 +2,7 @@
 
 namespace ClaudioDekker\Inertia;
 
+use Closure;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -158,11 +159,18 @@ class Assert
     {
         $this->has($key);
 
-        PHPUnit::assertEquals(
-            $value,
-            $this->prop($key),
-            sprintf('Inertia property [%s] does not match the expected value.', $this->dotPath($key))
-        );
+        if ($value instanceof Closure) {
+            PHPUnit::assertTrue(
+                $value($this->prop($key)),
+                sprintf('Inertia property [%s] was marked as invalid using a closure.', $this->dotPath($key))
+            );
+        } else {
+            PHPUnit::assertEquals(
+                $value,
+                $this->prop($key),
+                sprintf('Inertia property [%s] does not match the expected value.', $this->dotPath($key))
+            );
+        }
 
         return $this;
     }
