@@ -418,7 +418,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 
 ## Debugging
 
-While writing your tests, you might find yourself wanting to inspect some of the response's props using Laravel's 
+While writing your tests, you might find yourself wanting to inspect some of the page's props using Laravel's 
 `dump` or `dd` helpers. Luckily, this is really easy to do, and would work more or less how you'd expect it to:
 
 ```php
@@ -437,6 +437,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
     ->dump('user')
     ->dd('user.name')
 );
+```
 
 ## Publishing the configuration file
 
