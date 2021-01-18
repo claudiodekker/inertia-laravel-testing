@@ -2,6 +2,11 @@
 
 All notable changes to `claudiodekker/inertia-laravel-testing` will be documented in this file
 
+## 2.2.0 - 2021-01-18
+- Add `dump` and `dd` helpers by default ([#24](https://github.com/claudiodekker/inertia-laravel-testing/pull/24))
+- Add & prefer `missing` & `missingAll` methods ([#23](https://github.com/claudiodekker/inertia-laravel-testing/pull/23))
+- Fixes an issue where complex objects could not be scoped/asserted against correctly ([#22](https://github.com/claudiodekker/inertia-laravel-testing/pull/22))
+
 ## 2.1.0 - 2021-01-18
 - Make the `Assert` class Macroable ([#20](https://github.com/claudiodekker/inertia-laravel-testing/pull/20))
 - Provide a `dump` and `dd` macro that can be mixed in using `Assert::mixin(new VarDumper());`
