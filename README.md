@@ -33,26 +33,26 @@ composer require --dev claudiodekker/inertia-laravel-testing
 To start testing your Inertia pages, simply call the `assertInertia` method on your `TestResponse` responses, and chain any of the [available assertions](#available-assertions) on its closure/callback argument:
 
 ```php
-$response->assertInertia(fn ($inertia) => $inertia->someInertiaAssertion());
+$response->assertInertia(fn ($page) => $page->someInertiaAssertion());
 ```
 
 When using this library to its fullest extent, your tests will end up looking similar to this:
 ```php
 use ClaudioDekker\Inertia\Assert;
 
-$response->assertInertia(fn (Assert $inertia) => $inertia
+$response->assertInertia(fn (Assert $page) => $page
     ->component('Podcasts/Show')
-    ->has('podcast', fn (Assert $inertia) => $inertia
+    ->has('podcast', fn (Assert $page) => $page
         ->where('id', $podcast->id)
         ->where('subject', 'The Laravel Podcast')
         ->where('description', 'The Laravel Podcast brings you Laravel and PHP development news and discussion.')
         ->has('seasons', 4)
         ->has('seasons.4.episodes', 21)
-        ->has('host', fn (Assert $inertia) => $inertia
+        ->has('host', fn (Assert $page) => $page
             ->where('id', 1)
             ->where('name', 'Matt Stauffer')
         )
-        ->has('subscribers', 7, fn (Assert $inertia) => $inertia
+        ->has('subscribers', 7, fn (Assert $page) => $page
             ->where('id', 2)
             ->where('name', 'Claudio Dekker')
             ->where('platform', 'Apple Podcasts')
@@ -67,8 +67,8 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 > **NOTE**: The above uses [arrow functions](https://www.php.net/manual/en/migration74.new-features.php#migration74.new-features.core.arrow-functions), which are available as of PHP 7.4+.
 > If you are using this library on an older version of PHP, you will unfortunately need to use a regular callback instead:
 > ```php
-> $response->assertInertia(function (Assert $inertia) {
->     $inertia
+> $response->assertInertia(function (Assert $page) {
+>     $page
 >            ->component('Podcasts/Show')
 >            ->has('podcast', /* ...*/);
 > });
@@ -107,7 +107,7 @@ Helpers:
 To assert that the Inertia page has the page component you expect, you can use the `component` assertion:
 
 ```php
-$response->assertInertia(fn (Assert $inertia) => $inertia
+$response->assertInertia(fn (Assert $page) => $page
     ->component('Podcasts/Show')
 );
 ```
@@ -125,7 +125,7 @@ All of these settings are configurable in our [configuration file](#publishing-t
 To disable this filesystem lookup on a per-assertion basis, you may pass `false` as the second argument:
 
 ```php
-$response->assertInertia(fn (Assert $inertia) => $inertia
+$response->assertInertia(fn (Assert $page) => $page
     ->component('Podcasts/Show', false)
 );
 ```
@@ -137,7 +137,7 @@ Alternatively, if you've disabled the [automatic component filesystem lookup in 
 To assert that the Page URL matches what you expect, you may use the `url` assertion:
 
 ```php
-$response->assertInertia(fn (Assert $inertia) => $inertia
+$response->assertInertia(fn (Assert $page) => $page
     ->url('/podcasts')
 );
 ```
@@ -149,7 +149,7 @@ To assert that the (asset) version matches what you expect, you may use the `ver
 ```php
 $expected = md5(mix('/js/app.js'));
 
-$response->assertInertia(fn (Assert $inertia) => $inertia
+$response->assertInertia(fn (Assert $page) => $page
     ->version($expected)
 );
 ```
@@ -161,7 +161,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 To assert that Inertia **has** a property, you may use the `has` method. You can think of `has` similar to PHP's `isset`:
 
 ```php
-$response->assertInertia(fn (Assert $inertia) => $inertia
+$response->assertInertia(fn (Assert $page) => $page
     // Checking a root-level property
     ->has('podcast')
 
@@ -173,7 +173,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 ### Count / Size / Length
 To assert that Inertia **has a certain amount of items**, you may provide the expected size as the second argument:
 ```php
-$response->assertInertia(fn (Assert $inertia) => $inertia
+$response->assertInertia(fn (Assert $page) => $page
     // Checking that the root-level podcasts property exists and has 7 items
     ->has('podcast', 7)
 
@@ -196,18 +196,18 @@ $response->assertInertiaHas('message.comments.0.files.0.name', 'example-attachme
 
 Fortunately, we no longer _have to_ do this. Instead, we can simply scope properties using the `has` method:
 ```php
-$response->assertInertia(fn (Assert $inertia) => $inertia
+$response->assertInertia(fn (Assert $page) => $page
     // Creating a single-level property scope
-    ->has('message', fn (Assert $inertia) => $inertia
+    ->has('message', fn (Assert $page) => $page
         // We can now continue chaining methods
         ->has('subject')
         ->has('comments', 5)
 
         // And can even create a deeper scope using "dot" notation
-        ->has('comments.0', fn (Assert $inertia) => $inertia
+        ->has('comments.0', fn (Assert $page) => $page
             ->has('body')
             ->has('files', 1)
-            ->has('files.0', fn (Assert $inertia) => $inertia
+            ->has('files.0', fn (Assert $page) => $page
                 ->has('url')
             )
         )
@@ -221,15 +221,15 @@ to make sure that all the props there are as expected:
 
 ```php
     ->has('comments', 5)
-    ->has('comments.0', fn (Assert $inertia) => $inertia
+    ->has('comments.0', fn (Assert $page) => $page
         // ...
 ```
 
 To simplify this, you can simply combine the two calls, providing the scope as the third argument:
 ```php
-$response->assertInertia(fn (Assert $inertia) => $inertia
+$response->assertInertia(fn (Assert $page) => $page
     // Assert that there are five comments, and automatically scope into the first comment.
-    ->has('comments', 5, fn(Assert $inertia) => $inertia
+    ->has('comments', 5, fn(Assert $page) => $page
         ->has('body')
         // ...
     )
@@ -240,8 +240,8 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 To assert that an Inertia property has an expected value, you may use the `where` assertion:
 
 ```php
-$response->assertInertia(fn (Assert $inertia) => $inertia
-    ->has('message', fn (Assert $inertia) => $inertia
+$response->assertInertia(fn (Assert $page) => $page
+    ->has('message', fn (Assert $page) => $page
         // Assert that the subject prop matches the given message
         ->where('subject', 'This is an example message')
 
@@ -265,7 +265,7 @@ $user = User::factory()->create(['name' => 'John Doe']);
 
 // ... (Make your HTTP request etc.)
 
-$response->assertInertia(fn (Assert $inertia) => $inertia
+$response->assertInertia(fn (Assert $page) => $page
     ->where('user', $user)
     ->where('deeply.nested.user', $user)
 );
@@ -277,7 +277,7 @@ Finally, it's also possible to assert against a callback / closure. To do so, si
 and make sure that the response is `true` in order to make the assertion pass, or anything else to fail the assertion:
 
 ```php
-$response->assertInertia(fn (Assert $inertia) => $inertia
+$response->assertInertia(fn (Assert $page) => $page
     ->where('foo', fn ($value) => $value === 'bar')
 
     // or, as expected, for deeply nested values:
@@ -290,7 +290,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 Because working with arrays directly isn't always a great experience, we'll automatically cast arrays to 
 [Collections](https://laravel.com/docs/collections):
 ```php
-$response->assertInertia(fn (Assert $inertia) => $inertia
+$response->assertInertia(fn (Assert $page) => $page
     ->where('foo', function (Collection $value) {
         return $value->median() === 1.5;
     })
@@ -304,8 +304,8 @@ you might run into situations where you're working with unreliable data (such as
 really don't want interact with to keep your test simple. For those situations, the `etc` method exists:
 
 ```php
-$response->assertInertia(fn (Assert $inertia) => $inertia
-    ->has('message', fn (Assert $inertia) => $inertia
+$response->assertInertia(fn (Assert $page) => $page
+    ->has('message', fn (Assert $page) => $page
         ->has('subject')
         ->has('comments')
         ->etc()
@@ -322,8 +322,8 @@ Because `missing` isn't necessary by default, it provides a great solution when 
 
 In short, it does the exact opposite of the `has` method, ensuring that the property does _not exist_:
 ```php
-$response->assertInertia(fn (Assert $inertia) => $inertia
-    ->has('message', fn (Assert $inertia) => $inertia
+$response->assertInertia(fn (Assert $page) => $page
+    ->has('message', fn (Assert $page) => $page
         ->has('subject')
         ->missing('published_at')
         ->etc()
@@ -342,7 +342,7 @@ arguments, this method will perform a series of slightly different but predictab
 
 #### Basic `has` usage
 ```php
-$response->assertInertia(fn (Assert $inertia) => $inertia
+$response->assertInertia(fn (Assert $page) => $page
     // Before
     ->has('messages')
     ->has('subscribers')
@@ -360,7 +360,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 
 #### Count / Size / Length
 ```php
-$response->assertInertia(fn (Assert $inertia) => $inertia
+$response->assertInertia(fn (Assert $page) => $page
     // Before
     ->has('messages', 5)
     ->has('subscribers', 11)
@@ -380,7 +380,7 @@ Since this method checks properties against values by design, there isn't a lot 
 other methods, meaning that only the array-syntax exists for it right now:
 
 ```php
-$response->assertInertia(fn (Assert $inertia) => $inertia
+$response->assertInertia(fn (Assert $page) => $page
     // Before
     ->where('subject', 'Hello World')
     ->has('user.name', 'Claudio')
@@ -400,7 +400,7 @@ Similar to basic `hasAll` usage, this assertion accepts both a single array or a
 will assert that the given props do not exist:
 
 ```php
-$response->assertInertia(fn (Assert $inertia) => $inertia
+$response->assertInertia(fn (Assert $page) => $page
     // Before
     ->missing('subject')
     ->missing('user.name')
@@ -422,7 +422,7 @@ While writing your tests, you might find yourself wanting to inspect some of the
 `dump` or `dd` helpers. Luckily, this is really easy to do, and would work more or less how you'd expect it to:
 
 ```php
-$response->assertInertia(fn (Assert $inertia) => $inertia
+$response->assertInertia(fn (Assert $page) => $page
     // Dumping all props in the current scope
     // while still running all other assertions
     ->dump()
