@@ -107,9 +107,7 @@ Helpers:
 To assert that the Inertia page has the page component you expect, you can use the `component` assertion:
 
 ```php
-$response->assertInertia(fn (Assert $page) => $page
-    ->component('Podcasts/Show')
-);
+$response->assertInertia(fn (Assert $page) => $page->component('Podcasts/Show'));
 ```
 
 Apart from asserting that the component matches what you expect, this assertion will also automatically attempt to
@@ -125,9 +123,7 @@ All of these settings are configurable in our [configuration file](#publishing-t
 To disable this filesystem lookup on a per-assertion basis, you may pass `false` as the second argument:
 
 ```php
-$response->assertInertia(fn (Assert $page) => $page
-    ->component('Podcasts/Show', false)
-);
+$response->assertInertia(fn (Assert $page) => $page->component('Podcasts/Show', false));
 ```
 
 Alternatively, if you've disabled the [automatic component filesystem lookup in the configuration file](#publishing-the-configuration-file), it's possible to do the opposite and instead enable the lookup on a per-assertion basis by passing `true` as the second argument.
@@ -137,9 +133,7 @@ Alternatively, if you've disabled the [automatic component filesystem lookup in 
 To assert that the Page URL matches what you expect, you may use the `url` assertion:
 
 ```php
-$response->assertInertia(fn (Assert $page) => $page
-    ->url('/podcasts')
-);
+$response->assertInertia(fn (Assert $page) => $page->url('/podcasts'));
 ```
 
 ## (Asset) Version
@@ -149,9 +143,7 @@ To assert that the (asset) version matches what you expect, you may use the `ver
 ```php
 $expected = md5(mix('/js/app.js'));
 
-$response->assertInertia(fn (Assert $page) => $page
-    ->version($expected)
-);
+$response->assertInertia(fn (Assert $page) => $page->version($expected));
 ```
 
 > **NOTE**: We recommend to only use this assertion when you are using [asset versioning](https://inertiajs.com/asset-versioning).
