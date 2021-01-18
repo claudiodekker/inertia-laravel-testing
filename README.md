@@ -384,7 +384,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 Instead of making multiple `misses` call, you may use `missesAll` instead. 
 
 Similar to basic `hasAll` usage, this assertion accepts both a single array or a list of arguments, at which point it 
-will assert that the given props do not exist.
+will assert that the given props do not exist:
 
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
