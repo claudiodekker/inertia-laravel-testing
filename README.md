@@ -69,8 +69,8 @@ $response->assertInertia(fn (Assert $page) => $page
 > ```php
 > $response->assertInertia(function (Assert $page) {
 >     $page
->            ->component('Podcasts/Show')
->            ->has('podcast', /* ...*/);
+>         ->component('Podcasts/Show')
+>         ->has('podcast', /* ...*/);
 > });
 > ```
 
