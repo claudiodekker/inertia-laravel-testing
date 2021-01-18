@@ -3,7 +3,7 @@
 All notable changes to `claudiodekker/inertia-laravel-testing` will be documented in this file
 
 ## 2.2.1 - 2021-01-18
-- Fixes a bug where the automatic property interaction check also enabled on the top-level by default ([#26](https://github.com/claudiodekker/inertia-laravel-testing/pull/26))
+- Fixes a bug where the automatic property interaction check was also enabled on the top-level by default ([#26](https://github.com/claudiodekker/inertia-laravel-testing/pull/26))
 
 ## 2.2.0 - 2021-01-18
 - Add `dump` and `dd` helpers by default ([#24](https://github.com/claudiodekker/inertia-laravel-testing/pull/24))
