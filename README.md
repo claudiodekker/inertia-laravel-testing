@@ -30,13 +30,13 @@ composer require --dev claudiodekker/inertia-laravel-testing
 
 ## Usage
 
-To start testing your Inertia pages, simply call the `assertInertia` method on your `TestResponse` responses, and chain any of the [available assertions](#available-assertions) on it's closure/callback argument:
+To start testing your Inertia pages, simply call the `assertInertia` method on your `TestResponse` responses, and chain any of the [available assertions](#available-assertions) on its closure/callback argument:
 
 ```php
 $response->assertInertia(fn ($inertia) => $inertia->someInertiaAssertion());
 ```
 
-When using this library to it's fullest extent, your tests will end up looking similar to this:
+When using this library to its fullest extent, your tests will end up looking similar to this:
 ```php
 use ClaudioDekker\Inertia\Assert;
 
@@ -300,7 +300,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 );
 ```
 
-> **NOTE**: While `etc` reads fluently at the end of a query scope, placing it at the very beginning or somewhere in the
+> **NOTE**: While `etc` reads fluently at the end of a query scope, placing it at the beginning or somewhere in the
 > middle of your assertions does not change how it behaves: It will disable the automatic check that asserts that all properties
 > in the current scope have been interacted with.
 
