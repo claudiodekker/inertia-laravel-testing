@@ -97,7 +97,8 @@ Reducing verbosity (multiple assertions):
 - [`where`](#where-1)
 - [`misses`](#misses-1)
 
-[Debugging](#debugging)
+Helpers:
+- [Debugging](#debugging)
 
 ---
 
