@@ -3,19 +3,18 @@
 namespace ClaudioDekker\Inertia;
 
 use Closure;
-use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Contracts\Support\Responsable;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
-use InvalidArgumentException;
 use PHPUnit\Framework\Assert as PHPUnit;
 use PHPUnit\Framework\AssertionFailedError;
 
 class Assert
 {
-    use Macroable;
+    use Concerns\Has,
+        Concerns\Matching,
+        Concerns\Debugging,
+        Concerns\PageObject,
+        Concerns\Interaction,
+        Macroable;
 
     /** @var string */
     private $component;
@@ -32,9 +31,6 @@ class Assert
     /** @var string */
     private $path;
 
-    /** @var array */
-    protected $interacted = [];
-
     protected function __construct(string $component, array $props, string $url, $version = null, string $path = null)
     {
         $this->path = $path;
@@ -45,15 +41,6 @@ class Assert
         $this->version = $version;
     }
 
-    protected function interactsWith(string $key): void
-    {
-        $prop = Str::before($key, '.');
-
-        if (! in_array($prop, $this->interacted, true)) {
-            $this->interacted[] = $prop;
-        }
-    }
-
     protected function dotPath($key): string
     {
         if (is_null($this->path)) {
@@ -61,22 +48,6 @@ class Assert
         }
 
         return implode('.', [$this->path, $key]);
-    }
-
-    protected function prop(string $key = null)
-    {
-        return Arr::get($this->props, $key);
-    }
-
-    protected function count(string $key, $length): self
-    {
-        PHPUnit::assertCount(
-            $length,
-            $this->prop($key),
-            sprintf('Inertia property [%s] does not have the expected size.', $this->dotPath($key))
-        );
-
-        return $this;
     }
 
     protected function scope($key, Closure $callback): self
@@ -109,192 +80,5 @@ class Assert
         }
 
         return new self($page['component'], $page['props'], $page['url'], $page['version']);
-    }
-
-    public function interacted(): void
-    {
-        PHPUnit::assertSame(
-            [],
-            array_diff(array_keys($this->prop()), $this->interacted),
-            $this->path
-                ? sprintf('Unexpected Inertia properties were found in scope [%s].', $this->path)
-                : 'Unexpected Inertia properties were found on the root level.'
-        );
-    }
-
-    public function etc(): self
-    {
-        $this->interacted = array_keys($this->prop());
-
-        return $this;
-    }
-
-    public function component(string $value = null, $shouldExist = null): self
-    {
-        PHPUnit::assertSame($value, $this->component, 'Unexpected Inertia page component.');
-
-        if ($shouldExist || (is_null($shouldExist) && config('inertia.page.should_exist', true))) {
-            try {
-                app('inertia.view.finder')->find($value);
-            } catch (InvalidArgumentException $exception) {
-                PHPUnit::fail(sprintf('Inertia page component file [%s] does not exist.', $value));
-            }
-        }
-
-        return $this;
-    }
-
-    public function url(string $value): self
-    {
-        PHPUnit::assertSame($value, $this->url, 'Unexpected Inertia page url.');
-
-        return $this;
-    }
-
-    public function version($value): self
-    {
-        PHPUnit::assertSame($value, $this->version, 'Unexpected Inertia asset version.');
-
-        return $this;
-    }
-
-    public function hasAll($key): self
-    {
-        $keys = is_array($key) ? $key : func_get_args();
-
-        foreach ($keys as $prop => $count) {
-            if (is_int($prop)) {
-                $this->has($count);
-            } else {
-                $this->has($prop, $count);
-            }
-        }
-
-        return $this;
-    }
-
-    public function has(string $key, $value = null, Closure $scope = null): self
-    {
-        PHPUnit::assertTrue(
-            Arr::has($this->prop(), $key),
-            sprintf('Inertia property [%s] does not exist.', $this->dotPath($key))
-        );
-
-        $this->interactsWith($key);
-
-        if (is_int($value) && ! is_null($scope)) {
-            $path = $this->dotPath($key);
-
-            $prop = $this->prop($key);
-            if ($prop instanceof Collection) {
-                $prop = $prop->all();
-            }
-
-            PHPUnit::assertTrue($value > 0, sprintf('Cannot scope directly onto the first entry of property [%s] when asserting that it has a size of 0.', $path));
-            PHPUnit::assertIsArray($prop, sprintf('Direct scoping is currently unsupported for non-array like properties such as [%s].', $path));
-            $this->count($key, $value);
-
-            return $this->scope($key.'.'.array_keys($prop)[0], $scope);
-        }
-
-        if (is_int($value)) {
-            return $this->count($key, $value);
-        }
-
-        if (is_callable($value)) {
-            $this->scope($key, $value);
-        }
-
-        return $this;
-    }
-
-    public function missingAll($key): self
-    {
-        $keys = is_array($key) ? $key : func_get_args();
-
-        foreach ($keys as $prop) {
-            $this->misses($prop);
-        }
-
-        return $this;
-    }
-
-    public function missing(string $key): self
-    {
-        $this->interactsWith($key);
-
-        PHPUnit::assertNotTrue(
-            Arr::has($this->prop(), $key),
-            sprintf('Inertia property [%s] was found while it was expected to be missing.', $this->dotPath($key))
-        );
-
-        return $this;
-    }
-
-    public function missesAll($key): self
-    {
-        return $this->missingAll(
-            is_array($key) ? $key : func_get_args()
-        );
-    }
-
-    public function misses(string $key): self
-    {
-        return $this->missing($key);
-    }
-
-    public function whereAll(array $bindings): self
-    {
-        foreach ($bindings as $key => $value) {
-            $this->where($key, $value);
-        }
-
-        return $this;
-    }
-
-    public function where($key, $value): self
-    {
-        $this->has($key);
-
-        if ($value instanceof Closure) {
-            $prop = $this->prop($key);
-
-            PHPUnit::assertTrue(
-                $value(is_array($prop) ? Collection::make($prop) : $prop),
-                sprintf('Inertia property [%s] was marked as invalid using a closure.', $this->dotPath($key))
-            );
-        } elseif ($value instanceof Arrayable) {
-            PHPUnit::assertEquals(
-                $value->toArray(),
-                $this->prop($key),
-                sprintf('Inertia property [%s] does not match the expected Arrayable.', $this->dotPath($key))
-            );
-        } elseif ($value instanceof Responsable) {
-            PHPUnit::assertEquals(
-                json_decode(json_encode($value->toResponse(request())->getData()), JSON_OBJECT_AS_ARRAY),
-                $this->prop($key),
-                sprintf('Inertia property [%s] does not match the expected Responsable.', $this->dotPath($key))
-            );
-        } else {
-            PHPUnit::assertEquals(
-                $value,
-                $this->prop($key),
-                sprintf('Inertia property [%s] does not match the expected value.', $this->dotPath($key))
-            );
-        }
-
-        return $this;
-    }
-
-    public function dump(string $prop = null): self
-    {
-        dump($this->prop($prop));
-
-        return $this;
-    }
-
-    public function dd(string $prop = null): void
-    {
-        dd($this->prop($prop));
     }
 }
