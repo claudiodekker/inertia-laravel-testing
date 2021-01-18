@@ -57,5 +57,5 @@ trait Matching
 
     abstract protected function prop(string $key = null);
 
-    abstract public function has(string $key, $value = null, Closure $scope = null): Has;
+    abstract public function has(string $key, $value = null, Closure $scope = null);
 }

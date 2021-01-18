@@ -111,5 +111,5 @@ trait Has
 
     abstract protected function interactsWith(string $key): void;
 
-    abstract protected function scope($key, Closure $callback): self;
+    abstract protected function scope($key, Closure $callback);
 }
