@@ -683,14 +683,14 @@ class AssertTest extends TestCase
 
         $response = $this->makeMockRequest(
             Inertia::render('foo', [
-                'example' => JsonResource::collection([$userA, $userB]),
+                'example' => JsonResource::make([$userA, $userB]),
             ])
         );
 
         $called = false;
         $response->assertInertia(function (Assert $inertia) use (&$called) {
             return $inertia->has('example', function (Assert $inertia) use (&$called) {
-                $inertia->has('data');
+                $inertia->has('data', 2);
 
                 $called = true;
             });
