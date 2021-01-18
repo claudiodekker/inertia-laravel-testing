@@ -92,7 +92,7 @@ In-depth:
 - [`etc`](#etc)
     - [`misses`](#misses)
 
-Reducing cognitive load / verbosity (when doing multiple assertions):
+Reducing verbosity (multiple assertions):
 - [`has`](#has-1)
 - [`where`](#where-1)
 - [`misses`](#misses-1)
