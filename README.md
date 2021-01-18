@@ -65,7 +65,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 ```
 
 > **NOTE**: The above uses [arrow functions](https://www.php.net/manual/en/migration74.new-features.php#migration74.new-features.core.arrow-functions), which are available as of PHP 7.4+.
-> If you are using this package on an older version of PHP, you will unfortunately need to use a regular callback instead:
+> If you are using this library on an older version of PHP, you will unfortunately need to use a regular callback instead:
 > ```php
 > $response->assertInertia(function (Assert $inertia) {
 >     $inertia
@@ -285,10 +285,10 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 ```
 
 ## `etc`
-By default, this package will automatically make sure that you didn't forget to assert against some props, by detecting
-what props you've interacted with. However, at times, you might run into situations where you're working with unreliable
-data (such as from a feed) or with data that you really don't want to do anything with. For those situations, the `etc`
-method exists:
+By default, this library will automatically make sure that you didn't forget to assert against some props, by automatically
+detecting and failing your test when you haven't interacted with every prop in a scope at least once. However, at times, 
+you might run into situations where you're working with unreliable data (such as from a feed), or with data that you 
+really don't want interact with to keep your test simple. For those situations, the `etc` method exists:
 
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
@@ -305,13 +305,9 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 > in the current scope have been interacted with.
 
 ### `misses`
+Because `misses` isn't necessary by default, it provides a great solution when using `etc`. 
 
-While `misses` isn't necessary by default (as this library automatically checks that you've asserted/interacted with
-each property and will if you haven't), it provides a great solution when using `etc.`
-
-In short, it does exactly the opposite as the (basic usage of the) `has` method: It ensures that the prop does 
-_not exist_.
-
+In short, it does the exact opposite of the `has` method, ensuring that the property does _not exist_:
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
     ->has('message', fn (Assert $inertia) => $inertia
