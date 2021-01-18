@@ -74,7 +74,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 > });
 > ```
 
-> **NOTE**: While type-hinting the `Assert` isn't necessary (and will definitely cause _some_ minor breakage once migrating away from this package), it allows your IDE to automatically suggest the assertion methods that can be chained.
+> **NOTE**: While type-hinting the `Assert` isn't necessary (and will cause _some_ minor search-and-replaceable breakage once migrating away from this package), it allows your IDE to automatically suggest the assertion methods that can be chained.
 
 ## Available Assertions
 
