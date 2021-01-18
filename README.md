@@ -113,7 +113,7 @@ Apart from asserting that the component matches what you expect, this assertion 
 locate the page component on the filesystem, and will fail when it cannot be found.
 
 > **NOTE**: By default, lookup occurs relative to the `resources/js/Pages` folder, and will only accept matching files that have a `.vue` or `.svelte` extension.
-All of these settings are configurable using our [configuration file](#publishing-the-configuration-file).
+All of these settings are configurable in our [configuration file](#publishing-the-configuration-file).
 >
 > **If you are missing any default extensions** (such as those for React), please let us know which ones should be supported by [opening an issue](https://github.com/claudiodekker/inertia-laravel-testing/issues/new)!
 
@@ -127,7 +127,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 );
 ```
 
-Alternatively, if you've disabled the [automatic component filesystem lookup in the configuration file](#publishing-the-configuration-file), you can enable the lookup on a per-assertion basis by passing `true` as the second argument instead.
+Alternatively, if you've disabled the [automatic component filesystem lookup in the configuration file](#publishing-the-configuration-file), it's possible to do the opposite and instead enable the lookup on a per-assertion basis by passing `true` as the second argument.
 
 ## (Page) URL
 
@@ -155,7 +155,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 
 ## `has`
 ### Basic Usage
-To assert that Inertia **has** a property, you may use the `has` method:
+To assert that Inertia **has** a property, you may use the `has` method. You can think of `has` similar to PHP's `isset`:
 
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
@@ -168,7 +168,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 ```
 
 ### Count / Size / Length
-To assert that Inertia **has** a property of a specific size/length, you may provide the expected size as the second argument:
+To assert that Inertia **has a certain amount of items**, you may provide the expected size as the second argument:
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
     // Checking that the root-level podcasts property exists and has 7 items
@@ -185,14 +185,13 @@ This means that there is no need to manually ensure that the property exists usi
 ### Scoping
 
 In a previous version of this library, testing code could become fairly verbose, and the deeper your assertions went, 
-the more complex your assertions became. For instance, here is an example of code we used to write, taken directly from 
-one of our projects:
+the more complex your assertions became. For instance, here is a real example of some assertion logic we used to write:
 ```php
 $response->assertInertiaHas('message.comments.0.files.0.url', '/storage/attachments/example-attachment.pdf');
 $response->assertInertiaHas('message.comments.0.files.0.name', 'example-attachment.pdf');
 ```
 
-Fortunately, we no longer have to do this. Instead, we can simply scope properties using the `has` method:
+Fortunately, we no longer _have to_ do this. Instead, we can simply scope properties using the `has` method:
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
     // Creating a single-level property scope
@@ -215,28 +214,27 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 
 While this is already a significant improvement, that's not all: As you can see in the example above, you'll often run 
 into situations where you'll want to _check that a property has a certain length_, and then tap into one of the entries
-to make sure that all the props there are as expected.
+to make sure that all the props there are as expected:
 
-To simplify this, you can simply combine the two calls:
+```php
+    ->has('comments', 5)
+    ->has('comments.0', fn (Assert $inertia) => $inertia
+        // ...
+```
+
+To simplify this, you can simply combine the two calls, providing the scope as the third argument:
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
-    ->has('message', fn (Assert $inertia) => $inertia
-        ->has('subject')
-        // Assert that there are five comments, and automatically scope into the first comment.
-        ->has('comments', 5, fn(Assert $inertia) => $inertia
-            ->has('body')
-            ->has('files', 1, fn (Assert $inertia) => $inertia
-                ->has('url')
-            )
-        )
+    // Assert that there are five comments, and automatically scope into the first comment.
+    ->has('comments', 5, fn(Assert $inertia) => $inertia
+        ->has('body')
+        // ...
     )
 );
 ```
 
 ## `where`
-
-So far, we've primarily been describing how you can check that Inertia props exist and how to count them, but we haven't
-actually described how to assert that an Inertia property has a value. This can be done using `where`:
+To assert that an Inertia property has an expected value, you may use the `where` assertion:
 
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
@@ -251,12 +249,12 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 ```
 
 Under the hood, this first calls the `has` method to ensure that the property exists, and then uses an assertion to 
-make sure that the values match. This means that there is no need to manually call `has` and `where` on the same prop.
+make sure that the values match. This means that there is no need to manually call `has` and `where` on the same exact prop.
 
 #### Automatic Eloquent `Model`, `Arrayable`, or `Responsable` transforming
 
-For convenience, the `where` method doesn't just assert that strings or integers match, but also has the ability to
-test directly against Eloquent Models, classes that implement the `Arrayable` interface, or the `Responsable` interface.
+For convenience, the `where` method doesn't just assert using basic JSON values, but also has the ability to
+test directly against Eloquent Models, classes that implement the `Arrayable` or `Responsable` interfaces.
 
 For example:
 ```php
