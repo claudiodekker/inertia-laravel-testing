@@ -30,7 +30,7 @@ composer require --dev claudiodekker/inertia-laravel-testing
 
 ## Usage
 
-To start testing your Inertia pages, simply chain the `assertInertia` method onto your `TestResponse` responses, and chain any of the [available assertions](#available-assertions) on it's closure/callback argument:
+To start testing your Inertia pages, simply call the `assertInertia` method on your `TestResponse` responses, and chain any of the [available assertions](#available-assertions) on it's closure/callback argument:
 
 ```php
 $response->assertInertia(fn ($inertia) => $inertia->someInertiaAssertion());
