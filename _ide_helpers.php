@@ -7,14 +7,9 @@
 namespace Illuminate\Testing {
 
     /**
-     * @see \ClaudioDekker\Inertia\Assertions
+     * @see \ClaudioDekker\Inertia\TestResponseMacros
      *
-     * @method self assertInertia($component = null, $props = [])
-     * @method self assertInertiaHas($key, $value = null)
-     * @method self assertInertiaHasAll(array $bindings)
-     * @method self assertInertiaMissing($key)
-     * @method self assertInertiaCount($key, $count)
-     * @method array|mixed inertiaProps($key = null)
+     * @method self assertInertia(\Closure $assert = null)
      */
     class TestResponse
     {
@@ -25,13 +20,9 @@ namespace Illuminate\Testing {
 namespace Illuminate\Foundation\Testing {
 
     /**
-     * @see \ClaudioDekker\Inertia\Assertions
+     * @see \ClaudioDekker\Inertia\TestResponseMacros
      *
-     * @method self assertInertia($component = null, $props = [])
-     * @method self assertInertiaHas($key, $value = null)
-     * @method self assertInertiaHasAll(array $bindings)
-     * @method self assertInertiaMissing($key)
-     * @method array|mixed inertiaProps($key = null)
+     * @method self assertInertia(\Closure $assert = null)
      */
     class TestResponse
     {

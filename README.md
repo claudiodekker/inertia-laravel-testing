@@ -18,7 +18,7 @@
 
 # [inertiajs/inertia-laravel](https://github.com/inertiajs/inertia-laravel) Testing Helpers
 
-> **NOTE**: This package WILL be deprecated once ANY official testing helpers become available in [inertiajs/inertia-laravel](https://github.com/inertiajs/inertia-laravel). The package WILL stay available for install, but WILL NOT receive any further (security) updates from that point forward.
+> **GREAT NEWS!**: This package will be merged into [inertiajs/inertia-laravel](https://github.com/inertiajs/inertia-laravel) on **March 1st, 2021**, with upgrading efforts only taking a couple of seconds.  Once this happens, this package WILL remain available for installation, but WILL NOT receive any further (security) updates going forward.
 
 ## Installation
 
@@ -30,97 +30,387 @@ composer require --dev claudiodekker/inertia-laravel-testing
 
 ## Usage
 
-To test, simply chain any of the following methods onto your `TestResponse` responses.
+To start testing your Inertia pages, simply call the `assertInertia` method on your `TestResponse` responses, and chain any of the [available assertions](#available-assertions) on its closure/callback argument:
 
-![Screenshot 2020-09-02 at 19 44 39](https://user-images.githubusercontent.com/1752195/92017928-c10b4b00-ed54-11ea-95b4-ccff11d89d06.png)
-
-## Available Methods
-The methods made available in this package closely reflect those available in Laravel itself:
-
-Assert whether the given page is an Inertia-rendered view
 ```php
-$response->assertInertia();
-
-// or, also check whether the page is a specific component
-$response->assertInertia('example');
-
-// or, also check whether all of the given props match
-$response->assertInertia('example', [
-    'foo' => 'bar'
-]);
+$response->assertInertia(fn ($inertia) => $inertia->someInertiaAssertion());
 ```
 
-Return all available Inertia props for the page, or only retrieve a specific one
-``` php
-$response->inertiaProps();
-
-// Retrieve a specific (nested) prop. Returns `null` if the prop doesn't exist.
-$response->inertiaProps('nested.prop'); 
-```
-
-Assert whether the Inertia-rendered view has a specific property set
+When using this library to its fullest extent, your tests will end up looking similar to this:
 ```php
-$response->assertInertiaHas('key');
+use ClaudioDekker\Inertia\Assert;
 
-// or, against deeply nested values
-$response->assertInertiaHas('deeply.nested.key');
+$response->assertInertia(fn (Assert $inertia) => $inertia
+    ->component('Podcasts/Show')
+    ->has('podcast', fn (Assert $inertia) => $inertia
+        ->where('id', $podcast->id)
+        ->where('subject', 'The Laravel Podcast')
+        ->where('description', 'The Laravel Podcast brings you Laravel and PHP development news and discussion.')
+        ->has('seasons', 4)
+        ->has('seasons.4.episodes', 21)
+        ->has('host', fn (Assert $inertia) => $inertia
+            ->where('id', 1)
+            ->where('name', 'Matt Stauffer')
+        )
+        ->has('subscribers', 7, fn (Assert $inertia) => $inertia
+            ->where('id', 2)
+            ->where('name', 'Claudio Dekker')
+            ->where('platform', 'Apple Podcasts')
+            ->etc()
+            ->misses('email')
+            ->misses('password')
+        )
+    )
+);
 ```
 
-Apart from checking whether the property is set, the same method can be used to assert that the values match
+> **NOTE**: The above uses [arrow functions](https://www.php.net/manual/en/migration74.new-features.php#migration74.new-features.core.arrow-functions), which are available as of PHP 7.4+.
+> If you are using this library on an older version of PHP, you will unfortunately need to use a regular callback instead:
+> ```php
+> $response->assertInertia(function (Assert $inertia) {
+>     $inertia
+>            ->component('Podcasts/Show')
+>            ->has('podcast', /* ...*/);
+> });
+> ```
+
+> **NOTE**: While type-hinting the `Assert` isn't necessary (and will cause _some_ minor search-and-replaceable breakage once migrating away from this package), it allows your IDE to automatically suggest the assertion methods that can be chained.
+
+## Available Assertions
+
+Basics:
+- [Component](#component)
+- [(Page) URL](#page-url)
+- [(Asset) Version](#asset-version)
+
+In-depth:
+- [`has`](#has)
+    - [Count / Size / Length](#count--size--length)
+    - [Scoping](#scoping)
+- [`where`](#where)
+    - [Using a Closure](#using-a-closure)
+- [`etc`](#etc)
+    - [`misses`](#misses)
+
+Reducing verbosity (multiple assertions):
+- [`has`](#has-1)
+- [`where`](#where-1)
+- [`misses`](#misses-1)
+
+---
+
+## Component
+
+To assert that the Inertia page has the page component you expect, you can use the `component` assertion:
+
 ```php
-$response->assertInertiaHas('key', 'matches-this-value');
-
-// or, for deeply nested values
-$response->assertInertiaHas('deeply.nested.key', 'also-match-against-this-value');
+$response->assertInertia(fn (Assert $inertia) => $inertia
+    ->component('Podcasts/Show')
+);
 ```
 
-It's also possible to assert directly against a Laravel Model (or any other `Arrayable` or `Responsable` class)
+Apart from asserting that the component matches what you expect, this assertion will also automatically attempt to
+locate the page component on the filesystem, and will fail when it cannot be found.
+
+> **NOTE**: By default, lookup occurs relative to the `resources/js/Pages` folder, and will only accept matching files that have a `.vue` or `.svelte` extension.
+All of these settings are configurable in our [configuration file](#publishing-the-configuration-file).
+>
+> **If you are missing any default extensions** (such as those for React), please let us know which ones should be supported by [opening an issue](https://github.com/claudiodekker/inertia-laravel-testing/issues/new)!
+
+### Disabling or enabling a single lookup
+
+To disable this filesystem lookup on a per-assertion basis, you may pass `false` as the second argument:
+
 ```php
-$user = UserFactory::new()->create(['name' => 'John Doe']);
-
-// ... (Make HTTP request etc.)
-
-$response->assertInertiaHas('user', $user);
-$response->assertInertiaHas('deeply.nested.user', $user);
+$response->assertInertia(fn (Assert $inertia) => $inertia
+    ->component('Podcasts/Show', false)
+);
 ```
 
-It's also possible to check against a closure
+Alternatively, if you've disabled the [automatic component filesystem lookup in the configuration file](#publishing-the-configuration-file), it's possible to do the opposite and instead enable the lookup on a per-assertion basis by passing `true` as the second argument.
+
+## (Page) URL
+
+To assert that the Page URL matches what you expect, you may use the `url` assertion:
+
 ```php
-$response->assertInertiaHas('foo', function ($value) {
-    return $value === 'bar';
-});
-
-// or, again, for deeply nested values
-$response->assertInertiaHas('deeply.nested.foo', function ($value) {
-    return $value === 'bar';
-});
+$response->assertInertia(fn (Assert $inertia) => $inertia
+    ->url('/podcasts')
+);
 ```
 
-Next, you can also check against a whole array of properties. It'll simply loop over them using the `assertInertiaHas` method described above:
+## (Asset) Version
+
+To assert that the (asset) version matches what you expect, you may use the `version` assertion:
+
 ```php
-$response->assertInertiaHasAll([
-    'foo',
-    'bar.baz',
-    'another.nested.key' => 'example-value'
-]);
+$expected = md5(mix('/js/app.js'));
+
+$response->assertInertia(fn (Assert $inertia) => $inertia
+    ->version($expected)
+);
 ```
 
-You can also assert that a property was not set:
+> **NOTE**: We recommend to only use this assertion when you are using [asset versioning](https://inertiajs.com/asset-versioning).
+
+## `has`
+### Basic Usage
+To assert that Inertia **has** a property, you may use the `has` method. You can think of `has` similar to PHP's `isset`:
+
 ```php
-$response->assertInertiaMissing('key');
+$response->assertInertia(fn (Assert $inertia) => $inertia
+    // Checking a root-level property
+    ->has('podcast')
 
-// or, for deeply nested values
-$response->assertInertiaMissing('deeply.nested.key');
+    // Checking that the podcast prop has a nested id property using "dot" notation
+    ->has('podcast.id')
+);
 ```
 
-Assert whether a specific property has the correct count of records
+### Count / Size / Length
+To assert that Inertia **has a certain amount of items**, you may provide the expected size as the second argument:
 ```php
-$response->assertInertiaCount('key', $count);
+$response->assertInertia(fn (Assert $inertia) => $inertia
+    // Checking that the root-level podcasts property exists and has 7 items
+    ->has('podcast', 7)
 
-// or, for deeply nested values
-$response->assertInertiaCount('deeply.nested.key', $count);
+    // Checking that the podcast has 11 subscribers using "dot" notation
+    ->has('podcast.subscribers', 11)
+);
 ```
 
+The above will first assert that the property exists, as well as that is the expected size.
+This means that there is no need to manually ensure that the property exists using a separate `has` call.
+
+### Scoping
+
+In a previous version of this library, testing code could become fairly verbose, and the deeper your assertions went, 
+the more complex your assertions became. For instance, here is a real example of some assertion logic we used to write:
+```php
+$response->assertInertiaHas('message.comments.0.files.0.url', '/storage/attachments/example-attachment.pdf');
+$response->assertInertiaHas('message.comments.0.files.0.name', 'example-attachment.pdf');
+```
+
+Fortunately, we no longer _have to_ do this. Instead, we can simply scope properties using the `has` method:
+```php
+$response->assertInertia(fn (Assert $inertia) => $inertia
+    // Creating a single-level property scope
+    ->has('message', fn (Assert $inertia) => $inertia
+        // We can now continue chaining methods
+        ->has('subject')
+        ->has('comments', 5)
+
+        // And can even create a deeper scope using "dot" notation
+        ->has('comments.0', fn (Assert $inertia) => $inertia
+            ->has('body')
+            ->has('files', 1)
+            ->has('files.0', fn (Assert $inertia) => $inertia
+                ->has('url')
+            )
+        )
+    )
+);
+```
+
+While this is already a significant improvement, that's not all: As you can see in the example above, you'll often run 
+into situations where you'll want to _check that a property has a certain length_, and then tap into one of the entries
+to make sure that all the props there are as expected:
+
+```php
+    ->has('comments', 5)
+    ->has('comments.0', fn (Assert $inertia) => $inertia
+        // ...
+```
+
+To simplify this, you can simply combine the two calls, providing the scope as the third argument:
+```php
+$response->assertInertia(fn (Assert $inertia) => $inertia
+    // Assert that there are five comments, and automatically scope into the first comment.
+    ->has('comments', 5, fn(Assert $inertia) => $inertia
+        ->has('body')
+        // ...
+    )
+);
+```
+
+## `where`
+To assert that an Inertia property has an expected value, you may use the `where` assertion:
+
+```php
+$response->assertInertia(fn (Assert $inertia) => $inertia
+    ->has('message', fn (Assert $inertia) => $inertia
+        // Assert that the subject prop matches the given message
+        ->where('subject', 'This is an example message')
+
+        // or, the exact same, but for deeply nested values
+        ->where('comments.0.files.0.name', 'example-attachment.pdf')
+    )
+);
+```
+
+Under the hood, this first calls the `has` method to ensure that the property exists, and then uses an assertion to 
+make sure that the values match. This means that there is no need to manually call `has` and `where` on the same exact prop.
+
+#### Automatic Eloquent `Model`, `Arrayable`, or `Responsable` transforming
+
+For convenience, the `where` method doesn't just assert using basic JSON values, but also has the ability to
+test directly against Eloquent Models, classes that implement the `Arrayable` or `Responsable` interfaces.
+
+For example:
+```php
+$user = User::factory()->create(['name' => 'John Doe']);
+
+// ... (Make your HTTP request etc.)
+
+$response->assertInertia(fn (Assert $inertia) => $inertia
+    ->where('user', $user)
+    ->where('deeply.nested.user', $user)
+);
+```
+
+### Using a Closure
+
+Finally, it's also possible to assert against a callback / closure. To do so, simply provide a callback as the value,
+and make sure that the response is `true` in order to make the assertion pass, or anything else to fail the assertion:
+
+```php
+$response->assertInertia(fn (Assert $inertia) => $inertia
+    ->where('foo', fn ($value) => $value === 'bar')
+
+    // or, as expected, for deeply nested values:
+    ->where('deeply.nested.foo', function ($value) {
+        return $value === 'bar';
+    })
+);
+```
+
+## `etc`
+By default, this library will automatically make sure that you didn't forget to assert against some props, by automatically
+detecting and failing your test when you haven't interacted with every prop in a scope at least once. However, at times, 
+you might run into situations where you're working with unreliable data (such as from a feed), or with data that you 
+really don't want interact with to keep your test simple. For those situations, the `etc` method exists:
+
+```php
+$response->assertInertia(fn (Assert $inertia) => $inertia
+    ->has('message', fn (Assert $inertia) => $inertia
+        ->has('subject')
+        ->has('comments')
+        ->etc()
+    )
+);
+```
+
+> **NOTE**: While `etc` reads fluently at the end of a query scope, placing it at the beginning or somewhere in the
+> middle of your assertions does not change how it behaves: It will disable the automatic check that asserts that all properties
+> in the current scope have been interacted with.
+
+### `misses`
+Because `misses` isn't necessary by default, it provides a great solution when using `etc`. 
+
+In short, it does the exact opposite of the `has` method, ensuring that the property does _not exist_:
+```php
+$response->assertInertia(fn (Assert $inertia) => $inertia
+    ->has('message', fn (Assert $inertia) => $inertia
+        ->has('subject')
+        ->misses('published_at')
+        ->etc()
+    )
+);
+```
+
+## Reducing verbosity
+To reduce the amount of `where`, `has` or `misses` calls, there are a couple of convenience methods that allow you to
+make these same assertions in a slightly less-verbose looking way. Do note that these methods do not make your assertions
+any faster, and really only exist to help you reduce your test's visual complexity.
+
+### `has`
+Instead of making multiple `has` calls, you may use the `hasAll` assertion instead. Depending on how you provide 
+arguments, this method will perform a series of slightly different but predictable assertion:
+
+#### Basic `has` usage
+```php
+$response->assertInertia(fn (Assert $inertia) => $inertia
+    // Before
+    ->has('messages')
+    ->has('subscribers')
+
+    // After
+    ->hasAll([
+        'messages',
+        'subscribers',
+    ])
+
+    // Alternative
+    ->hasAll('messages', 'subscribers')
+);
+```
+
+#### Count / Size / Length
+```php
+$response->assertInertia(fn (Assert $inertia) => $inertia
+    // Before
+    ->has('messages', 5)
+    ->has('subscribers', 11)
+
+    // After
+    ->hasAll([
+        'messages' => 5,
+        'subscribers' => 11,
+    ])
+);
+```
+
+### `where`
+To reduce the amount of `where` calls, the `whereAll` method exists.
+
+Since this method checks properties against values by design, there isn't a lot of flexibility like with some of these
+other methods, meaning that only the array-syntax exists for it right now:
+
+```php
+$response->assertInertia(fn (Assert $inertia) => $inertia
+    // Before
+    ->where('subject', 'Hello World')
+    ->has('user.name', 'Claudio')
+
+    // After
+    ->whereAll([
+        'subject' => 'Hello World',
+        'user.name' => fn ($value) => $value === 'Claudio',
+    ])
+);
+```
+
+### `misses`
+Instead of making multiple `misses` call, you may use `missesAll` instead. 
+
+Similar to basic `hasAll` usage, this assertion accepts both a single array or a list of arguments, at which point it 
+will assert that the given props do not exist:
+
+```php
+$response->assertInertia(fn (Assert $inertia) => $inertia
+    // Before
+    ->misses('subject')
+    ->misses('user.name')
+
+    // After
+    ->missesAll([
+        'subject',
+        'user.name',
+    ])
+
+    // Alternative
+    ->missesAll('subject', 'user.name')
+);
+```
+
+## Publishing the configuration file
+
+To modify any settings such as the lookup paths, valid extensions etc., you may publish our configuration file into your
+application and change any of it's values. To do so, run the following Artisan command:
+
+```bash
+php artisan vendor:publish --provider="ClaudioDekker\Inertia\InertiaTestingServiceProvider"
+```
 
 ## Testing
 
