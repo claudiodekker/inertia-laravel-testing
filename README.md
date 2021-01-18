@@ -97,6 +97,9 @@ Reducing verbosity (multiple assertions):
 - [`where`](#where-1)
 - [`misses`](#misses-1)
 
+Debugging:
+- `[dump & dd helpers]`(#debugging)
+
 ---
 
 ## Component
@@ -412,6 +415,28 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
     ->missesAll('subject', 'user.name')
 );
 ```
+
+## Debugging
+
+While writing your tests, you might find yourself wanting to inspect some of the response's props using Laravel's 
+`dump` or `dd` helpers. Luckily, this is really easy to do, and would work more or less how you'd expect it to:
+
+```php
+$response->assertInertia(fn (Assert $inertia) => $inertia
+    // Dumping all props in the current scope
+    // while still running all other assertions
+    ->dump()
+    ->where('user.name', 'Claudio')
+
+    // Dump-and-die all props in the current scope, preventing
+    // all other (perhaps failing) assertions from running
+    ->dd()
+    ->where('user.name', 'Jonathan')
+
+    // Dumping / Dump-and-die a specific prop
+    ->dump('user')
+    ->dd('user.name')
+);
 
 ## Publishing the configuration file
 
