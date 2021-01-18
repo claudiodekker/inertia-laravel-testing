@@ -14,6 +14,7 @@ return [
     | (shared) property on the page, or to use the `etc` method.
     |
     */
+
     'force_top_level_property_interaction' => false,
 
     /*
