@@ -284,7 +284,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 );
 ```
 
-Because working with arrays directly isn't always a great experience, we'll also automatically cast arrays to 
+Because working with arrays directly isn't always a great experience, we'll automatically cast arrays to 
 [Collections](https://laravel.com/docs/collections):
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
