@@ -290,9 +290,9 @@ $response->assertInertia(fn (Assert $page) => $page
 ```
 
 ## `etc`
-This library will automatically fail your test when you haven't interacted with at least one of the props in a scope,
-which is generally a very useful feature. However, at times, you might run into situations where you're working with 
-unreliable data (such as from a feed), or with data that you really don't want interact with to keep your test simple. 
+This library will automatically fail your test when you haven't interacted with at least one of the props in a scope.
+While this is generally useful, you might run into situations where you're working with unreliable data 
+(such as from a feed), or with data that you really don't want interact with, in order to keep your test simple.
 For those situations, the `etc` method exists:
 
 ```php
@@ -305,8 +305,8 @@ $response->assertInertia(fn (Assert $page) => $page
 );
 ```
 
-> **NOTE**: This automatic property check ONLY applies to scopes (such as the `message` scope in the example above). If
-> you wish to enforce this for the top-level of your page as well, you may enable this in our [configuration file](#publishing-the-configuration-file)..
+> **IMPORTANT**: This automatic property check **DOES NOT APPLY TO YOUR TOP-LEVEL PROPS**. If you wish to enforce this
+> for the top-level of your page as well, you may enable this in our [configuration file](#publishing-the-configuration-file).
 
 > **NOTE**: While `etc` reads fluently at the end of a query scope, placing it at the beginning or somewhere in the
 > middle of your assertions does not change how it behaves: It will disable the automatic check that asserts that all properties
