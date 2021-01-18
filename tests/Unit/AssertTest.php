@@ -889,7 +889,7 @@ class AssertTest extends TestCase
     }
 
     /** @test */
-    public function it_fails_when_it_does_not_interact_with_all_props_on_the_root_level_at_least_once(): void
+    public function it_does_not_fail_when_not_interacting_with_every_top_level_prop_by_default(): void
     {
         $response = $this->makeMockRequest(
             Inertia::render('foo', [
@@ -897,6 +897,23 @@ class AssertTest extends TestCase
                 'bar' => 'baz',
             ])
         );
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->has('foo');
+        });
+    }
+
+    /** @test */
+    public function it_fails_when_not_interacting_with_every_top_level_prop_while_the_force_setting_is_enabled(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'foo' => 'bar',
+                'bar' => 'baz',
+            ])
+        );
+
+        config()->set('inertia.force_top_level_property_interaction', true);
 
         $this->expectException(AssertionFailedError::class);
         $this->expectExceptionMessage('Unexpected Inertia properties were found on the root level.');
