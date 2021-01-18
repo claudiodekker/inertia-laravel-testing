@@ -2,7 +2,6 @@
 
 namespace ClaudioDekker\Inertia\Concerns;
 
-use ClaudioDekker\Inertia\Assert;
 use Closure;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Responsable;
