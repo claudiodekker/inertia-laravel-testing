@@ -36,4 +36,6 @@ trait Interaction
 
         return $this;
     }
+
+    abstract protected function prop(string $key = null);
 }

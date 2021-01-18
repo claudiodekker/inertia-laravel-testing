@@ -2,6 +2,7 @@
 
 namespace ClaudioDekker\Inertia\Concerns;
 
+use ClaudioDekker\Inertia\Assert;
 use Closure;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Responsable;
@@ -38,7 +39,7 @@ trait Matching
             );
         } elseif ($value instanceof Responsable) {
             PHPUnit::assertEquals(
-                json_decode(json_encode($value->toResponse(request())->getData()), JSON_OBJECT_AS_ARRAY),
+                json_decode(json_encode($value->toResponse(request())->getData()), true),
                 $this->prop($key),
                 sprintf('Inertia property [%s] does not match the expected Responsable.', $this->dotPath($key))
             );
@@ -52,4 +53,10 @@ trait Matching
 
         return $this;
     }
+
+    abstract protected function dotPath($key): string;
+
+    abstract protected function prop(string $key = null);
+
+    abstract public function has(string $key, $value = null, Closure $scope = null): Has;
 }

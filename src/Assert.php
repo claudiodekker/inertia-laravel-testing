@@ -68,7 +68,7 @@ class Assert
     {
         try {
             $response->assertViewHas('page');
-            $page = json_decode(json_encode($response->viewData('page')), JSON_OBJECT_AS_ARRAY);
+            $page = json_decode(json_encode($response->viewData('page')), true);
 
             PHPUnit::assertIsArray($page);
             PHPUnit::assertArrayHasKey('component', $page);

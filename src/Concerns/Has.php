@@ -104,4 +104,12 @@ trait Has
     {
         return $this->missing($key);
     }
+
+    abstract protected function prop(string $key = null);
+
+    abstract protected function dotPath($key): string;
+
+    abstract protected function interactsWith(string $key): void;
+
+    abstract protected function scope($key, Closure $callback): self;
 }

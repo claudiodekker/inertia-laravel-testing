@@ -15,4 +15,6 @@ trait Debugging
     {
         dd($this->prop($prop));
     }
+
+    abstract protected function prop(string $key = null);
 }
