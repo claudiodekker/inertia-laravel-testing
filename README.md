@@ -57,8 +57,8 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
             ->where('name', 'Claudio Dekker')
             ->where('platform', 'Apple Podcasts')
             ->etc()
-            ->misses('email')
-            ->misses('password')
+            ->missing('email')
+            ->missing('password')
         )
     )
 );
@@ -90,12 +90,12 @@ In-depth:
 - [`where`](#where)
     - [Using a Closure](#using-a-closure)
 - [`etc`](#etc)
-    - [`misses`](#misses)
+    - [`missing`](#missing)
 
 Reducing verbosity (multiple assertions):
 - [`has`](#has-1)
 - [`where`](#where-1)
-- [`misses`](#misses-1)
+- [`missing`](#missing-1)
 
 ---
 
@@ -314,22 +314,22 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 > middle of your assertions does not change how it behaves: It will disable the automatic check that asserts that all properties
 > in the current scope have been interacted with.
 
-### `misses`
-Because `misses` isn't necessary by default, it provides a great solution when using `etc`. 
+### `missing`
+Because `missing` isn't necessary by default, it provides a great solution when using `etc`. 
 
 In short, it does the exact opposite of the `has` method, ensuring that the property does _not exist_:
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
     ->has('message', fn (Assert $inertia) => $inertia
         ->has('subject')
-        ->misses('published_at')
+        ->missing('published_at')
         ->etc()
     )
 );
 ```
 
 ## Reducing verbosity
-To reduce the amount of `where`, `has` or `misses` calls, there are a couple of convenience methods that allow you to
+To reduce the amount of `where`, `has` or `missing` calls, there are a couple of convenience methods that allow you to
 make these same assertions in a slightly less-verbose looking way. Do note that these methods do not make your assertions
 any faster, and really only exist to help you reduce your test's visual complexity.
 
@@ -390,8 +390,8 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 );
 ```
 
-### `misses`
-Instead of making multiple `misses` call, you may use `missesAll` instead. 
+### `missing`
+Instead of making multiple `missing` call, you may use `missingAll` instead. 
 
 Similar to basic `hasAll` usage, this assertion accepts both a single array or a list of arguments, at which point it 
 will assert that the given props do not exist:
@@ -399,17 +399,17 @@ will assert that the given props do not exist:
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
     // Before
-    ->misses('subject')
-    ->misses('user.name')
+    ->missing('subject')
+    ->missing('user.name')
 
     // After
-    ->missesAll([
+    ->missingAll([
         'subject',
         'user.name',
     ])
 
     // Alternative
-    ->missesAll('subject', 'user.name')
+    ->missingAll('subject', 'user.name')
 );
 ```
 

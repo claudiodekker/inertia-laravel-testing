@@ -208,7 +208,7 @@ class Assert
         return $this;
     }
 
-    public function missesAll($key): self
+    public function missingAll($key): self
     {
         $keys = is_array($key) ? $key : func_get_args();
 
@@ -219,7 +219,7 @@ class Assert
         return $this;
     }
 
-    public function misses(string $key): self
+    public function missing(string $key): self
     {
         $this->interactsWith($key);
 
@@ -229,6 +229,18 @@ class Assert
         );
 
         return $this;
+    }
+
+    public function missesAll($key): self
+    {
+        return $this->missingAll(
+            is_array($key) ? $key : func_get_args()
+        );
+    }
+
+    public function misses(string $key): self
+    {
+        return $this->missing($key);
     }
 
     public function whereAll(array $bindings): self
