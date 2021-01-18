@@ -304,12 +304,28 @@ class AssertTest extends TestCase
         );
 
         $response->assertInertia(function (Assert $inertia) {
+            $inertia->missing('foo.baz');
+        });
+    }
+
+    /** @test */
+    public function it_asserts_that_a_prop_is_missing_using_the_misses_method(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'foo' => [
+                    'bar' => true,
+                ],
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) {
             $inertia->misses('foo.baz');
         });
     }
 
     /** @test */
-    public function it_fails_asserting_that_a_prop_is_missing_when_it_exists(): void
+    public function it_fails_asserting_that_a_prop_is_missing_when_it_exists_using_the_misses_method(): void
     {
         $response = $this->makeMockRequest(
             Inertia::render('foo', [
@@ -331,6 +347,28 @@ class AssertTest extends TestCase
     }
 
     /** @test */
+    public function it_fails_asserting_that_a_prop_is_missing_when_it_exists(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'prop' => 'value',
+                'foo' => [
+                    'bar' => true,
+                ],
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [foo.bar] was found while it was expected to be missing.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia
+                ->has('prop')
+                ->missing('foo.bar');
+        });
+    }
+
+    /** @test */
     public function it_can_assert_that_multiple_props_are_missing(): void
     {
         $response = $this->makeMockRequest(
@@ -342,7 +380,7 @@ class AssertTest extends TestCase
         $response->assertInertia(function (Assert $inertia) {
             $inertia
                 ->has('baz')
-                ->missesAll([
+                ->missingAll([
                     'foo',
                     'bar',
                 ]);
@@ -365,6 +403,72 @@ class AssertTest extends TestCase
         $response->assertInertia(function (Assert $inertia) {
             $inertia
                 ->has('foo')
+                ->missingAll([
+                    'bar',
+                    'baz',
+                ]);
+        });
+    }
+
+    /** @test */
+    public function it_can_use_arguments_instead_of_an_array_to_assert_that_it_is_missing_multiple_props(): void
+    {
+        $this->makeMockRequest(
+                Inertia::render('foo', [
+                    'baz' => 'foo',
+                ])
+        )->assertInertia(function (Assert $inertia) {
+            $inertia->has('baz')->missingAll('foo', 'bar');
+        });
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [baz] was found while it was expected to be missing.');
+
+        $this->makeMockRequest(
+            Inertia::render('foo', [
+                'foo' => 'bar',
+                'baz' => 'example',
+            ])
+        )->assertInertia(function (Assert $inertia) {
+            $inertia->has('foo')->missingAll('bar', 'baz');
+        });
+    }
+
+    /** @test */
+    public function it_can_assert_that_multiple_props_are_missing_using_the_misses_all_method(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'baz' => 'foo',
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia
+                ->has('baz')
+                ->missesAll([
+                    'foo',
+                    'bar',
+                ]);
+        });
+    }
+
+    /** @test */
+    public function it_cannot_assert_that_multiple_props_are_missing_when_at_least_one_exists_using_the_misses_all_method(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'foo' => 'bar',
+                'baz' => 'example',
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [baz] was found while it was expected to be missing.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia
+                ->has('foo')
                 ->missesAll([
                     'bar',
                     'baz',
@@ -373,12 +477,12 @@ class AssertTest extends TestCase
     }
 
     /** @test */
-    public function it_can_use_arguments_instead_of_an_array_to_assert_that_it_misses_multiple_props(): void
+    public function it_can_use_arguments_instead_of_an_array_to_assert_that_it_is_missing_multiple_props_using_the_misses_all_method(): void
     {
         $this->makeMockRequest(
-                Inertia::render('foo', [
-                    'baz' => 'foo',
-                ])
+            Inertia::render('foo', [
+                'baz' => 'foo',
+            ])
         )->assertInertia(function (Assert $inertia) {
             $inertia->has('baz')->missesAll('foo', 'bar');
         });
