@@ -4,6 +4,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Force top-level property interaction
+    |--------------------------------------------------------------------------
+    |
+    | This setting allows you to toggle the automatic property interaction
+    | check for your page's top-level properties. While this feature is
+    | useful in property scopes, it is generally not as useful on the
+    | top-level of the page, as it forces you to interact with each
+    | (shared) property on the page, or to use the `etc` method.
+    |
+    */
+    'force_top_level_property_interaction' => false,
+
+    /*
+    |--------------------------------------------------------------------------
     | Page
     |--------------------------------------------------------------------------
     |
