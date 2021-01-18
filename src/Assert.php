@@ -8,12 +8,15 @@ use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Illuminate\Support\Traits\Macroable;
 use InvalidArgumentException;
 use PHPUnit\Framework\Assert as PHPUnit;
 use PHPUnit\Framework\AssertionFailedError;
 
 class Assert
 {
+    use Macroable;
+
     /** @var string */
     private $component;
 

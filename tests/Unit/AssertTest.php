@@ -4,6 +4,7 @@ namespace ClaudioDekker\Inertia\Tests\Unit;
 
 use ClaudioDekker\Inertia\Assert;
 use ClaudioDekker\Inertia\Tests\TestCase;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -1056,6 +1057,25 @@ class AssertTest extends TestCase
 
         $response->assertInertia(function (Assert $inertia) {
             $inertia->version('different-version');
+        });
+    }
+
+    /** @test */
+    public function it_is_macroable(): void
+    {
+        Assert::macro('myCustomMacro', function () {
+            throw new Exception('My Custom Macro was called!');
+        });
+
+        $response = $this->makeMockRequest(
+            Inertia::render('foo')
+        );
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('My Custom Macro was called!');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->myCustomMacro();
         });
     }
 }
