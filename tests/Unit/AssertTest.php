@@ -479,6 +479,27 @@ class AssertTest extends TestCase
     }
 
     /** @test */
+    public function array_props_will_be_automatically_cast_to_collections_when_using_a_closure(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => [
+                    'baz' => 'foo',
+                    'example' => 'value',
+                ],
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->where('bar', function ($value) {
+                $this->assertInstanceOf(Collection::class, $value);
+
+                return $value->count() === 2;
+            });
+        });
+    }
+
+    /** @test */
     public function the_prop_matches_a_value_using_an_arrayable(): void
     {
         Model::unguard();

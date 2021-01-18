@@ -284,6 +284,16 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 );
 ```
 
+Because working with arrays directly isn't always a great experience, we'll automatically cast arrays to 
+[Collections](https://laravel.com/docs/collections):
+```php
+$response->assertInertia(fn (Assert $inertia) => $inertia
+    ->where('foo', function (Collection $value) {
+        return $value->median() === 1.5;
+    })
+);
+```
+
 ## `etc`
 By default, this library will automatically make sure that you didn't forget to assert against some props, by automatically
 detecting and failing your test when you haven't interacted with every prop in a scope at least once. However, at times, 
