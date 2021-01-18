@@ -21,6 +21,7 @@
     ],
     "require": {
         "php": "^7.2|^8.0",
+        "ext-json": "*",
         "inertiajs/inertia-laravel": "^v0.3",
         "laravel/framework": "^6.0|^7.0|^8.0"
     },

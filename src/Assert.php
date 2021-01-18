@@ -97,7 +97,7 @@ class Assert
     {
         try {
             $response->assertViewHas('page');
-            $page = $response->viewData('page');
+            $page = json_decode(json_encode($response->viewData('page')), JSON_OBJECT_AS_ARRAY);
 
             PHPUnit::assertIsArray($page);
             PHPUnit::assertArrayHasKey('component', $page);
@@ -259,7 +259,7 @@ class Assert
             );
         } elseif ($value instanceof Responsable) {
             PHPUnit::assertEquals(
-                $value->toResponse(request())->getData(),
+                json_decode(json_encode($value->toResponse(request())->getData()), JSON_OBJECT_AS_ARRAY),
                 $this->prop($key),
                 sprintf('Inertia property [%s] does not match the expected Responsable.', $this->dotPath($key))
             );
