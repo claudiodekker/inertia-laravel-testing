@@ -675,6 +675,31 @@ class AssertTest extends TestCase
     }
 
     /** @test */
+    public function it_can_scope_on_complex_objects_responsable(): void
+    {
+        Model::unguard();
+        $userA = User::make(['name' => 'Example']);
+        $userB = User::make(['name' => 'Another']);
+
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'example' => JsonResource::collection([$userA, $userB]),
+            ])
+        );
+
+        $called = false;
+        $response->assertInertia(function (Assert $inertia) use (&$called) {
+            return $inertia->has('example', function (Assert $inertia) use (&$called) {
+                $inertia->has('data');
+
+                $called = true;
+            });
+        });
+
+        $this->assertTrue($called, 'The scoped query was never actually called.');
+    }
+
+    /** @test */
     public function it_can_directly_scope_onto_the_first_item_when_asserting_that_a_prop_has_a_length_greater_than_zero(): void
     {
         $response = $this->makeMockRequest(
