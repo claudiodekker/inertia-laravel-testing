@@ -242,8 +242,10 @@ class Assert
         $this->has($key);
 
         if ($value instanceof Closure) {
+            $prop = $this->prop($key);
+
             PHPUnit::assertTrue(
-                $value($this->prop($key)),
+                $value(is_array($prop) ? Collection::make($prop) : $prop),
                 sprintf('Inertia property [%s] was marked as invalid using a closure.', $this->dotPath($key))
             );
         } elseif ($value instanceof Arrayable) {
