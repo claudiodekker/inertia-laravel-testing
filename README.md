@@ -320,7 +320,8 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 
 ## Reducing verbosity
 To reduce the amount of `where`, `has` or `misses` calls, there are a couple of convenience methods that allow you to
-make these same assertions in a slightly less-verbose way.
+make these same assertions in a slightly less-verbose looking way. Do note that these methods do not make your assertions
+any faster, and really only exist to help you reduce your test's visual complexity.
 
 ### `has`
 Instead of making multiple `has` calls, you may use the `hasAll` assertion instead. Depending on how you provide 
@@ -363,7 +364,7 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 To reduce the amount of `where` calls, the `whereAll` method exists.
 
 Since this method checks properties against values by design, there isn't a lot of flexibility like with some of these
-other methods, and only the array-syntax exists as of right now:
+other methods, meaning that only the array-syntax exists for it right now:
 
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
@@ -380,9 +381,10 @@ $response->assertInertia(fn (Assert $inertia) => $inertia
 ```
 
 ### `misses`
-Instead of making multiple `misses` call, you may use `missesAll` instead. Similar to basic `hasAll` usage, this 
-assertion accepts both a single array or a list of arguments, at which point it will assert that the given props
-do not exist.
+Instead of making multiple `misses` call, you may use `missesAll` instead. 
+
+Similar to basic `hasAll` usage, this assertion accepts both a single array or a list of arguments, at which point it 
+will assert that the given props do not exist.
 
 ```php
 $response->assertInertia(fn (Assert $inertia) => $inertia
