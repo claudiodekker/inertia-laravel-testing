@@ -18,8 +18,7 @@
 
 # [inertiajs/inertia-laravel](https://github.com/inertiajs/inertia-laravel) Testing Helpers
 
-> **NOTE**: This package will become part of [inertiajs/inertia-laravel](https://github.com/inertiajs/inertia-laravel) on **March 1st, 2021**, with upgrading being as simple as removing this package from your dependencies.
-> Once this happens, this package WILL remain available for installation, but WILL NOT receive any further (security) updates going forward.
+> **NOTE**: This package will become part of [inertiajs/inertia-laravel](https://github.com/inertiajs/inertia-laravel) on **March 1st, 2021**, with upgrading only taking several one or two minutes at max. Once this happens, this package WILL remain available for installation, but WILL NOT receive any further (security) updates going forward.
 
 ## Installation
 
