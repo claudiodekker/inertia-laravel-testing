@@ -2,6 +2,10 @@
 
 All notable changes to `claudiodekker/inertia-laravel-testing` will be documented in this file
 
+## 2.1.0 - 2021-01-18
+- Make the `Assert` class Macroable ([#20](https://github.com/claudiodekker/inertia-laravel-testing/pull/20))
+- Provide a `dump` and `dd` macro that can be mixed in using `Assert::mixin(new VarDumper());`
+
 ## 2.0.0 - 2021-01-18
 - Reworked the entire library using a brand-new, fluent syntax ([#18](https://github.com/claudiodekker/inertia-laravel-testing/pull/18))
 - Updated deprecation notice: This version serves as the **official beta** for [inertiajs/inertia-laravel](https://github.com/inertiajs/inertia-laravel).
