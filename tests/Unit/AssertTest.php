@@ -303,7 +303,7 @@ class AssertTest extends TestCase
         );
 
         $this->expectException(TypeError::class);
-        $this->expectExceptionMessage('Argument 1 passed to PHPUnit\Framework\Assert::assertCount() must be of the type int, string given');
+        $this->expectExceptionMessage('Argument 1 passed to PHPUnit\Framework\Assert::assertCount() must be of the type');
 
         $response->assertInertia(function (Assert $inertia) {
             $inertia->has('bar', 'invalid');
