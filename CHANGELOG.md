@@ -2,7 +2,7 @@
 
 All notable changes to `claudiodekker/inertia-laravel-testing` will be documented in this file
 
-## 2.2.2 - 2021-01-18
+## 2.2.2 - 2021-01-19
 - Use `assertSame` instead of `assertEquals` for safer comparisons ([#27](https://github.com/claudiodekker/inertia-laravel-testing/pull/27))
 
 ## 2.2.1 - 2021-01-18
