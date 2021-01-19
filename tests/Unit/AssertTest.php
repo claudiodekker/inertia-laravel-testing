@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Collection;
 use Inertia\Inertia;
+use InvalidArgumentException;
 use PHPUnit\Framework\AssertionFailedError;
 
 class AssertTest extends TestCase
@@ -289,6 +290,23 @@ class AssertTest extends TestCase
 
         $response->assertInertia(function (Assert $inertia) {
             $inertia->has('baz', 2);
+        });
+    }
+
+    /** @test */
+    public function it_fails_when_the_second_argument_of_the_has_assertion_is_an_unsupported_type(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => 'baz',
+            ])
+        );
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The second argument of `has` is of an invalid type. Did you mean to use `where`?');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->has('bar', 'invalid');
         });
     }
 
