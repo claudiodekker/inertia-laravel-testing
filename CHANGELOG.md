@@ -2,6 +2,9 @@
 
 All notable changes to `claudiodekker/inertia-laravel-testing` will be documented in this file
 
+## 2.2.2 - 2021-01-18
+- Use `assertSame` instead of `assertEquals` for safer comparisons ([#27](https://github.com/claudiodekker/inertia-laravel-testing/pull/27))
+
 ## 2.2.1 - 2021-01-18
 - Fixes a bug where the automatic property interaction check was also enabled on the top-level by default ([#26](https://github.com/claudiodekker/inertia-laravel-testing/pull/26))
 
