@@ -10,8 +10,8 @@ use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Collection;
 use Inertia\Inertia;
-use InvalidArgumentException;
 use PHPUnit\Framework\AssertionFailedError;
+use TypeError;
 
 class AssertTest extends TestCase
 {
@@ -302,8 +302,8 @@ class AssertTest extends TestCase
             ])
         );
 
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The second argument of `has` is of an invalid type. Did you mean to use `where`?');
+        $this->expectException(TypeError::class);
+        $this->expectExceptionMessage('Argument 1 passed to PHPUnit\Framework\Assert::assertCount() must be of the type int, string given');
 
         $response->assertInertia(function (Assert $inertia) {
             $inertia->has('bar', 'invalid');
