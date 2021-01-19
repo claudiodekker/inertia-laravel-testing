@@ -5,6 +5,7 @@ namespace ClaudioDekker\Inertia\Concerns;
 use Closure;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 use PHPUnit\Framework\Assert as PHPUnit;
 
 trait Has
@@ -64,7 +65,11 @@ trait Has
         }
 
         if (is_callable($value)) {
-            $this->scope($key, $value);
+            return $this->scope($key, $value);
+        }
+
+        if (! is_null($value)) {
+            throw new InvalidArgumentException('The second argument of `has` is of an invalid type. Did you mean to use `where`?');
         }
 
         return $this;
