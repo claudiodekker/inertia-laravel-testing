@@ -2,6 +2,9 @@
 
 All notable changes to `claudiodekker/inertia-laravel-testing` will be documented in this file
 
+## 2.2.3 - 2021-01-19
+- Fail when an unsupported second argument is provided to `has` ([#28](https://github.com/claudiodekker/inertia-laravel-testing/pull/28))
+
 ## 2.2.2 - 2021-01-19
 - Use `assertSame` instead of `assertEquals` for safer comparisons ([#27](https://github.com/claudiodekker/inertia-laravel-testing/pull/27))
 
