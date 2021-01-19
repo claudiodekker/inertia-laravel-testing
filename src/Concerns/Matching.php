@@ -31,19 +31,19 @@ trait Matching
                 sprintf('Inertia property [%s] was marked as invalid using a closure.', $this->dotPath($key))
             );
         } elseif ($value instanceof Arrayable) {
-            PHPUnit::assertEquals(
+            PHPUnit::assertSame(
                 $value->toArray(),
                 $this->prop($key),
                 sprintf('Inertia property [%s] does not match the expected Arrayable.', $this->dotPath($key))
             );
         } elseif ($value instanceof Responsable) {
-            PHPUnit::assertEquals(
+            PHPUnit::assertSame(
                 json_decode(json_encode($value->toResponse(request())->getData()), true),
                 $this->prop($key),
                 sprintf('Inertia property [%s] does not match the expected Responsable.', $this->dotPath($key))
             );
         } else {
-            PHPUnit::assertEquals(
+            PHPUnit::assertSame(
                 $value,
                 $this->prop($key),
                 sprintf('Inertia property [%s] does not match the expected value.', $this->dotPath($key))
