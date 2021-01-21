@@ -24,9 +24,6 @@ trait Matching
         $this->has($key);
 
         $actual = $this->prop($key);
-        if (is_array($actual)) {
-            array_multisort($actual);
-        }
 
         if ($expected instanceof Closure) {
             PHPUnit::assertTrue(
@@ -43,9 +40,7 @@ trait Matching
             $expected = json_decode(json_encode($expected->toResponse(request())->getData()), true);
         }
 
-        if (is_array($expected)) {
-            array_multisort($expected);
-        }
+        $this->ensureSorted($expected, $actual);
 
         PHPUnit::assertSame(
             $expected,
@@ -54,6 +49,15 @@ trait Matching
         );
 
         return $this;
+    }
+
+    protected function ensureSorted(&...$args): void
+    {
+        foreach ($args as &$arg) {
+            if (is_array($arg)) {
+                array_multisort($arg);
+            }
+        }
     }
 
     abstract protected function dotPath($key): string;
