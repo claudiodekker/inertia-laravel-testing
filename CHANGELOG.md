@@ -2,6 +2,9 @@
 
 All notable changes to `claudiodekker/inertia-laravel-testing` will be documented in this file
 
+## 2.2.4 - 2021-01-21
+- Fixes a bug where arrays that were ordered differently would cause a failure ([#31](https://github.com/claudiodekker/inertia-laravel-testing/pull/31))
+
 ## 2.2.3 - 2021-01-19
 - Fail when an unsupported second argument is provided to `has` ([#28](https://github.com/claudiodekker/inertia-laravel-testing/pull/28))
 
