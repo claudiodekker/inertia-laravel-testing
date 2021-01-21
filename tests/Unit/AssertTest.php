@@ -566,6 +566,23 @@ class AssertTest extends TestCase
     }
 
     /** @test */
+    public function the_prop_does_not_match_loosely(): void
+    {
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => 1,
+            ])
+        );
+
+        $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Inertia property [bar] does not match the expected value.');
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->where('bar', true);
+        });
+    }
+
+    /** @test */
     public function the_prop_matches_a_value_using_a_closure(): void
     {
         $response = $this->makeMockRequest(
@@ -650,10 +667,26 @@ class AssertTest extends TestCase
         );
 
         $this->expectException(AssertionFailedError::class);
-        $this->expectExceptionMessage('Inertia property [bar] does not match the expected Arrayable.');
+        $this->expectExceptionMessage('Inertia property [bar] does not match the expected value.');
 
         $response->assertInertia(function (Assert $inertia) use ($userB) {
             $inertia->where('bar', $userB);
+        });
+    }
+
+    /** @test */
+    public function the_prop_matches_a_value_using_an_arrayable_even_when_they_are_sorted_differently(): void
+    {
+        // https://github.com/claudiodekker/inertia-laravel-testing/issues/30
+        Model::unguard();
+        $response = $this->makeMockRequest(
+            Inertia::render('foo', [
+                'bar' => User::make(['id' => 1, 'name' => 'Example']),
+            ])
+        );
+
+        $response->assertInertia(function (Assert $inertia) {
+            $inertia->where('bar', User::make(['name' => 'Example', 'id' => 1]));
         });
     }
 
@@ -687,7 +720,7 @@ class AssertTest extends TestCase
         );
 
         $this->expectException(AssertionFailedError::class);
-        $this->expectExceptionMessage('Inertia property [bar] does not match the expected Responsable.');
+        $this->expectExceptionMessage('Inertia property [bar] does not match the expected value.');
 
         $response->assertInertia(function (Assert $inertia) use ($resourceB) {
             $inertia->where('bar', $resourceB);

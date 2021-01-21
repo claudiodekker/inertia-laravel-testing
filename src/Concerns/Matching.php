@@ -19,36 +19,39 @@ trait Matching
         return $this;
     }
 
-    public function where($key, $value): self
+    public function where($key, $expected): self
     {
         $this->has($key);
 
-        if ($value instanceof Closure) {
-            $prop = $this->prop($key);
+        $actual = $this->prop($key);
+        if (is_array($actual)) {
+            array_multisort($actual);
+        }
 
+        if ($expected instanceof Closure) {
             PHPUnit::assertTrue(
-                $value(is_array($prop) ? Collection::make($prop) : $prop),
+                $expected(is_array($actual) ? Collection::make($actual) : $actual),
                 sprintf('Inertia property [%s] was marked as invalid using a closure.', $this->dotPath($key))
             );
-        } elseif ($value instanceof Arrayable) {
-            PHPUnit::assertSame(
-                $value->toArray(),
-                $this->prop($key),
-                sprintf('Inertia property [%s] does not match the expected Arrayable.', $this->dotPath($key))
-            );
-        } elseif ($value instanceof Responsable) {
-            PHPUnit::assertSame(
-                json_decode(json_encode($value->toResponse(request())->getData()), true),
-                $this->prop($key),
-                sprintf('Inertia property [%s] does not match the expected Responsable.', $this->dotPath($key))
-            );
-        } else {
-            PHPUnit::assertSame(
-                $value,
-                $this->prop($key),
-                sprintf('Inertia property [%s] does not match the expected value.', $this->dotPath($key))
-            );
+
+            return $this;
         }
+
+        if ($expected instanceof Arrayable) {
+            $expected = $expected->toArray();
+        } elseif ($expected instanceof Responsable) {
+            $expected = json_decode(json_encode($expected->toResponse(request())->getData()), true);
+        }
+
+        if (is_array($expected)) {
+            array_multisort($expected);
+        }
+
+        PHPUnit::assertSame(
+            $expected,
+            $actual,
+            sprintf('Inertia property [%s] does not match the expected value.', $this->dotPath($key))
+        );
 
         return $this;
     }
