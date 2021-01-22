@@ -40,7 +40,8 @@ trait Matching
             $expected = json_decode(json_encode($expected->toResponse(request())->getData()), true);
         }
 
-        $this->ensureSorted($expected, $actual);
+        $this->ensureSorted($expected);
+        $this->ensureSorted($actual);
 
         PHPUnit::assertSame(
             $expected,
@@ -51,13 +52,17 @@ trait Matching
         return $this;
     }
 
-    protected function ensureSorted(&...$args): void
+    protected function ensureSorted(&$value)
     {
-        foreach ($args as &$arg) {
-            if (is_array($arg)) {
-                array_multisort($arg);
-            }
+        if (! is_array($value)) {
+            return;
         }
+
+        foreach ($value as &$arg) {
+            $this->ensureSorted($arg);
+        }
+
+        ksort($value);
     }
 
     abstract protected function dotPath($key): string;
