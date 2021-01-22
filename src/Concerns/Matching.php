@@ -52,7 +52,7 @@ trait Matching
         return $this;
     }
 
-    protected function ensureSorted(&$value)
+    protected function ensureSorted(&$value): void
     {
         if (! is_array($value)) {
             return;
