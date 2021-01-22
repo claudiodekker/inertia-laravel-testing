@@ -2,6 +2,9 @@
 
 All notable changes to `claudiodekker/inertia-laravel-testing` will be documented in this file
 
+## 2.2.5 - 2021-01-22
+- Re-fixes the previous release's bugfix, which only partly solved the issue. ([#32](https://github.com/claudiodekker/inertia-laravel-testing/pull/32))
+
 ## 2.2.4 - 2021-01-21
 - Fixes a bug where arrays that were ordered differently would cause a failure ([#31](https://github.com/claudiodekker/inertia-laravel-testing/pull/31))
 
