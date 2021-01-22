@@ -682,11 +682,28 @@ class AssertTest extends TestCase
         $response = $this->makeMockRequest(
             Inertia::render('foo', [
                 'bar' => User::make(['id' => 1, 'name' => 'Example']),
+                'baz' => [
+                    'id' => 1,
+                    'name' => 'Nayeli Hermiston',
+                    'email' => 'vroberts@example.org',
+                    'email_verified_at' => '2021-01-22T10:34:42.000000Z',
+                    'created_at' => '2021-01-22T10:34:42.000000Z',
+                    'updated_at' => '2021-01-22T10:34:42.000000Z',
+                ],
             ])
         );
 
         $response->assertInertia(function (Assert $inertia) {
-            $inertia->where('bar', User::make(['name' => 'Example', 'id' => 1]));
+            $inertia
+                ->where('bar', User::make(['name' => 'Example', 'id' => 1]))
+                ->where('baz', [
+                    'name' => 'Nayeli Hermiston',
+                    'email' => 'vroberts@example.org',
+                    'id' => 1,
+                    'email_verified_at' => '2021-01-22T10:34:42.000000Z',
+                    'updated_at' => '2021-01-22T10:34:42.000000Z',
+                    'created_at' => '2021-01-22T10:34:42.000000Z',
+                ]);
         });
     }
 
