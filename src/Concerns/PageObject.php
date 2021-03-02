@@ -41,4 +41,14 @@ trait PageObject
 
         return $this;
     }
+
+    public function toArray(): array
+    {
+        return [
+            'component' => $this->component,
+            'props' => $this->props,
+            'url' => $this->url,
+            'version' => $this->version,
+        ];
+    }
 }

@@ -3,11 +3,12 @@
 namespace ClaudioDekker\Inertia;
 
 use Closure;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Traits\Macroable;
 use PHPUnit\Framework\Assert as PHPUnit;
 use PHPUnit\Framework\AssertionFailedError;
 
-class Assert
+class Assert implements Arrayable
 {
     use Concerns\Has,
         Concerns\Matching,

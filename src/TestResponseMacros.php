@@ -24,4 +24,11 @@ class TestResponseMacros
             return $this;
         };
     }
+
+    public function inertiaPage()
+    {
+        return function () {
+            return Assert::fromTestResponse($this)->toArray();
+        };
+    }
 }
