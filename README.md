@@ -19,4 +19,5 @@
 This package has been merged into [inertiajs/inertia-laravel](https://github.com/inertiajs/inertia-laravel/pull/220).
 This means that **as of right now, this package WILL NOT be receiving any further (security) updates going forward**. 
 
-If you haven't yet, it is highly recommended to migrate to [inertiajs/inertia-laravel](https://github.com/inertiajs/inertia-laravel/pull/220) as soon as possible. Migrating only takes a couple of seconds, with no real implementation changes.
+If you haven't yet, it is highly recommended to migrate to [inertiajs/inertia-laravel](https://github.com/inertiajs/inertia-laravel/pull/220) as soon as possible. 
+Migrating only takes a couple of seconds, with no real implementation changes.
