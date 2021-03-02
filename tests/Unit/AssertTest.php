@@ -38,19 +38,6 @@ class AssertTest extends TestCase
     }
 
     /** @test */
-    public function it_preserves_the_ability_to_continue_chaining_laravel_test_response_calls(): void
-    {
-        $response = $this->makeMockRequest(
-            Inertia::render('foo')
-        );
-
-        $this->assertInstanceOf(
-            $this->getTestResponseClass(),
-            $response->assertInertia()
-        );
-    }
-
-    /** @test */
     public function the_component_matches(): void
     {
         $response = $this->makeMockRequest(
