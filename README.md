@@ -1,4 +1,4 @@
-<p align="center">
+<p align="left">
   <a href="https://github.com/claudiodekker/inertia-laravel-testing/releases">
     <img src="https://img.shields.io/github/release/claudiodekker/inertia-laravel-testing.svg?style=flat-square" alt="Latest Version">
   </a>
@@ -16,9 +16,7 @@
 
 # [inertiajs/inertia-laravel](https://github.com/inertiajs/inertia-laravel) Testing Helpers
 
-This package has been merged into [inertiajs/inertia-laravel](https://github.com/inertiajs/inertia-laravel/pull/220), and upgrading only takes a couple of seconds. This means that as of right now, this package IS NOT receiving any further (security) updates going forward. It is highly recommended to migrate to [inertiajs/inertia-laravel](https://github.com/inertiajs/inertia-laravel/pull/220) as soon as possible.
->
+This package has been merged into [inertiajs/inertia-laravel](https://github.com/inertiajs/inertia-laravel/pull/220).
+This means that **as of right now, this package WILL NOT be receiving any further (security) updates going forward**. 
 
-## License
-
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+If you haven't yet, it is highly recommended to migrate to [inertiajs/inertia-laravel](https://github.com/inertiajs/inertia-laravel/pull/220) as soon as possible. ***Migrating only takes a couple of seconds, with no real implementation changes**
